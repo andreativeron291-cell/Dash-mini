@@ -125,10 +125,18 @@ const SUPABASE_URL="https://xxnnejcfxdqvdylccwnb.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_iZ1rVfXEHcnNx4W-eU26Zw_zZ6GHdSO";  
 const PROMO_FUNCTION="dynamic-worker";  
   
-const sb=window.supabase.createClient(  
-SUPABASE_URL,  
-SUPABASE_PUBLISHABLE_KEY  
-);  
+let sb=null;
+
+try{
+  if(window.supabase){
+    sb=window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+  }
+}catch(e){
+  console.error("Supabase non disponibile:",e);
+}  
   
 const c=document.getElementById("game");  
 const ctx=c.getContext("2d");  
