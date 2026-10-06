@@ -10,512 +10,913 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070714;col
 body{touch-action:none}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 button{font:inherit;color:#fff;border:0;cursor:pointer}
-#top{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;z-index:3;flex-wrap:wrap;gap:8px}
-.badge-group{display:flex;gap:8px;align-items:center}
-.badge{background:rgba(8,8,25,.85);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:8px 12px;font-weight:bold;backdrop-filter:blur(6px);box-shadow:0 4px 10px rgba(0,0,0,0.5)}
+#top{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;z-index:3;gap:8px;pointer-events:none}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{background:rgba(8,8,25,.9);border:1px solid #ffffff44;border-radius:12px;padding:8px 12px;font-weight:bold}
 #buttons{position:fixed;right:12px;bottom:12px;display:flex;gap:8px;z-index:4}
-.icon{width:52px;height:52px;border-radius:15px;background:rgba(20,20,48,.9);border:2px solid #fff;font-size:23px;display:flex;align-items:center;justify-content:center;transition:transform 0.1s}
-.icon:active{transform:scale(0.92)}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:10;align-items:center;justify-content:center;padding:15px}
-.card{width:min(94vw,520px);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#20204a,#101025);border:2px solid #fff;border-radius:20px;padding:20px;box-shadow:0 15px 60px #000;position:relative}
-.card h2{text-align:center;margin:0 0 16px;font-size:22px}
-.close{width:100%;margin-top:15px;padding:12px;border-radius:12px;background:#9b2850;font-weight:bold}
-.shopX{position:absolute;right:12px;top:10px;width:38px;height:38px;border-radius:50%;background:#9b2850;font-size:26px;line-height:34px;text-align:center;padding:0}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.skin{background:#0c0c20;border:2px solid #555;border-radius:15px;padding:12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between}
-.preview{width:55px;height:55px;margin:0 auto 8px;border:3px solid #111;border-radius:8px;transform:rotate(0deg);display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;overflow:hidden}
-.skin button{width:100%;padding:9px;margin-top:8px;border-radius:9px;background:#30306b;font-weight:bold}
-.skin button:disabled{opacity:.5;cursor:not-allowed}
-.small{color:#bbb;text-align:center;font-size:13px;margin-bottom:12px}
-#adminPanel input, #promoPanel input{width:100%;padding:11px;border-radius:9px;border:1px solid #777;background:#080812;color:#fff;margin-bottom:8px;font-size:15px}
-.toggle{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #333}
-.toggle input{width:20px;height:20px;cursor:pointer}
-
-/* Stili Rarità Skin */
-.rarity-tag{font-size:11px;font-weight:bold;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-bottom:4px;display:inline-block}
-.r-comune{border-color:#a0a0a0;}.r-comune .rarity-tag{background:#555;color:#fff}
-.r-rara{border-color:#3b82f6;}.r-rara .rarity-tag{background:#2563eb;color:#fff}
-.r-epica{border-color:#a855f7;}.r-epica .rarity-tag{background:#9333ea;color:#fff}
-.r-leggendario{border-color:#eab308;}.r-leggendario .rarity-tag{background:#ca8a04;color:#fff}
-.r-mitica{border-color:#ec4899;}.r-mitica .rarity-tag{background:#db2777;color:#fff}
-.r-prismatica{border-color:#06b6d4;box-shadow:0 0 10px #06b6d4;}.r-prismatica .rarity-tag{background:linear-gradient(90deg,#ff007f,#00f0ff,#7000ff);color:#fff}
-.r-ultraleggendario{border-color:#ff4500;box-shadow:0 0 12px #ff4500;}.r-ultraleggendario .rarity-tag{background:linear-gradient(90deg,#ff4500,#ff8c00,#ffd700);color:#000;font-weight:bold}
+.icon{width:52px;height:52px;border-radius:15px;background:#141430e8;border:2px solid #fff;font-size:23px}
+.overlay{display:none;position:fixed;inset:0;background:#000d;z-index:10;align-items:center;justify-content:center;padding:15px}
+.card{width:min(94vw,560px);max-height:90vh;overflow:auto;background:linear-gradient(#20204a,#101025);border:2px solid #fff;border-radius:20px;padding:20px;box-shadow:0 15px 60px #000;position:relative}
+.card h2{text-align:center;margin:0 0 15px}
+.x{position:absolute;right:12px;top:10px;width:38px;height:38px;border-radius:50%;background:#9b2850;font-size:26px}
+.small{text-align:center;color:#bbb;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.skin{background:#0c0c20;border:2px solid #555;border-radius:15px;padding:10px;text-align:center}
+.preview{width:55px;height:55px;margin:5px auto 8px;border:3px solid #111;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.skin button,.wide{width:100%;padding:10px;margin-top:8px;border-radius:9px;background:#30306b;font-weight:bold}
+input{width:100%;padding:11px;border-radius:9px;border:1px solid #777;background:#080812;color:#fff;margin-bottom:8px;font-size:15px}
+.toggle{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #333}
+.admin-list{margin-top:12px}
+.promo-row{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #444;padding:8px 0;font-size:13px}
+.promo-row button{background:#9b2850;padding:7px 9px;border-radius:8px}
+.rarity-tag{font-size:10px;font-weight:bold;text-transform:uppercase;padding:2px 7px;border-radius:10px}
+.r-comune{border-color:#aaa}
+.r-rara{border-color:#3b82f6}
+.r-epica{border-color:#a855f7}
+.r-leggendario{border-color:#eab308}
+.r-mitica{border-color:#ec4899}
+.r-prismatica{border-color:#06b6d4;box-shadow:0 0 10px #06b6d4}
+.r-ultraleggendario{border-color:#ff4500;box-shadow:0 0 12px #ff4500}
+.r-comune .rarity-tag{background:#555}
+.r-rara .rarity-tag{background:#2563eb}
+.r-epica .rarity-tag{background:#9333ea}
+.r-leggendario .rarity-tag{background:#ca8a04}
+.r-mitica .rarity-tag{background:#db2777}
+.r-prismatica .rarity-tag{background:#06b6d4}
+.r-ultraleggendario .rarity-tag{background:#ff8c00;color:#000}
+#revivePanel{z-index:20}
+.revive{text-align:center}
+.timer{font-size:54px;font-weight:bold;color:#ffd700;margin:10px}
+.reviveBtns{display:flex;gap:10px}
+.reviveBtns button{flex:1;padding:13px;border-radius:12px;font-weight:bold}
+.yes{background:#16a34a}
+.no{background:#9b2850}
+@media(max-width:500px){
+.badge{padding:7px 9px;font-size:14px}
+.icon{width:50px;height:50px}
+}
 </style>
 </head>
 <body>
+
 <canvas id="game" width="1200" height="650"></canvas>
 
 <div id="top">
-  <div class="badge-group">
-    <div class="badge">⭐ <span id="scoreUI">0</span></div>
-    <div class="badge">🏅 <span id="bestUI">0</span></div>
-  </div>
-  <div class="badge">🪙 <span id="coinsUI">0</span></div>
+<div class="badges">
+<div class="badge">⭐ <span id="scoreUI">0</span></div>
+<div class="badge">🏅 <span id="bestUI">0</span></div>
+<div class="badge">❤️ <span id="livesUI">0</span></div>
+</div>
+<div class="badge">🪙 <span id="coinsUI">0</span></div>
 </div>
 
 <div id="buttons">
-  <button class="icon" id="shopBtn" aria-label="Negozio">🛒</button>
-  <button class="icon" id="promoBtn" aria-label="Codici Promo">🎁</button>
-  <button class="icon" id="adminBtn" aria-label="Admin Panel">⚙️</button>
+<button class="icon" id="shopBtn">🛒</button>
+<button class="icon" id="promoBtn">🎁</button>
+<button class="icon" id="adminBtn">⚙️</button>
 </div>
 
-<!-- OVERLAY NEGOZIO -->
 <div class="overlay" id="shop">
- <div class="card">
-  <button class="shopX" id="shopX">×</button>
-  <h2>🛒 NEGOZIO SKIN</h2>
-  <p class="small">Colleziona tutte le skin con rarità differenti!</p>
-  <div class="grid" id="skinGrid"></div>
-  <button class="close">CHIUDI</button>
- </div>
+<div class="card">
+<button class="x" id="shopX">×</button>
+<h2>🛒 NEGOZIO SKIN</h2>
+<p class="small">Più costa la skin, più vite può avere!</p>
+<div class="grid" id="skinGrid"></div>
+<button class="wide closeAll">CHIUDI</button>
+</div>
 </div>
 
-<!-- OVERLAY CODICI PROMO -->
 <div class="overlay" id="promoPanel">
- <div class="card">
-  <button class="shopX" id="promoX">×</button>
-  <h2>🎁 CODICI PROMOZIONALI</h2>
-  <p class="small">Inserisci un codice promo per ricevere premi speciali!</p>
-  <input id="promoCode" type="text" placeholder="Inserisci codice...">
-  <button id="redeemBtn" style="width:100%;padding:12px;border-radius:10px;background:#2563eb;font-weight:bold;margin-top:5px">RISCATTA CODICE</button>
-  <p id="promoMsg" class="small" style="margin-top:10px;font-weight:bold"></p>
-  <button class="close">CHIUDI</button>
- </div>
+<div class="card">
+<button class="x" id="promoX">×</button>
+<h2>🎁 CODICI PROMOZIONALI</h2>
+<p class="small">Inserisci un codice globale.</p>
+<input id="promoCode" placeholder="Inserisci codice...">
+<button class="wide" id="redeemBtn" style="background:#2563eb">RISCATTA CODICE</button>
+<p id="promoMsg" class="small"></p>
+<button class="wide closeAll" style="background:#9b2850">CHIUDI</button>
+</div>
 </div>
 
-<!-- OVERLAY ADMIN PANEL -->
 <div class="overlay" id="adminPanel">
- <div class="card">
-  <button class="shopX" id="adminX">×</button>
-  <h2>🔐 ADMIN PANEL</h2>
-  <div id="login">
-   <input id="key" type="password" placeholder="Chiave admin">
-   <button class="skin button" id="unlock" style="width:100%;padding:11px;border-radius:10px;background:#30306b;font-weight:bold">SBLOCCA</button>
-   <p id="msg" class="small" style="margin-top:8px"></p>
-  </div>
-  <div id="cheats" style="display:none">
-   <div class="toggle">👻 Invincibilità <input id="god" type="checkbox"></div>
-   <div class="toggle">🚀 Salto alto <input id="high" type="checkbox"></div>
-   <div class="toggle">⚡ Super velocità <input id="fast" type="checkbox"></div>
-   <div class="toggle">🐌 Modalità lenta <input id="slow" type="checkbox"></div>
-   <div class="toggle">🌙 Gravità bassa <input id="gravity" type="checkbox"></div>
-   <div class="toggle">🧱 Niente ostacoli <input id="noobs" type="checkbox"></div>
-   <button id="addCoins" style="width:100%;padding:11px;margin-top:12px;border-radius:10px;background:#30306b;font-weight:bold">+10.000 🪙</button>
-   <button id="clearObs" style="width:100%;padding:11px;margin-top:8px;border-radius:10px;background:#30306b;font-weight:bold">Elimina ostacoli</button>
-  </div>
-  <button class="close">CHIUDI</button>
- </div>
+<div class="card">
+<button class="x" id="adminX">×</button>
+<h2>🔐 ADMIN PANEL</h2>
+
+<div id="login">
+<input id="key" type="password" placeholder="Chiave admin">
+<button class="wide" id="unlock">SBLOCCA</button>
+<p id="msg" class="small"></p>
 </div>
+
+<div id="adminArea" style="display:none">
+
+<h3>🎁 Crea codice globale</h3>
+<input id="newCode" placeholder="Esempio: SUPERWIN">
+<input id="newReward" type="number" min="0" placeholder="Monete premio">
+
+<button class="wide" id="createPromo" style="background:#16a34a">
+CREA CODICE
+</button>
+
+<p id="createMsg" class="small"></p>
+<div id="promoList" class="admin-list"></div>
+
+<h3>⚙️ Cheats</h3>
+
+<div class="toggle">👻 Invincibilità <input id="god" type="checkbox"></div>
+<div class="toggle">🚀 Salto alto <input id="high" type="checkbox"></div>
+<div class="toggle">⚡ Super velocità <input id="fast" type="checkbox"></div>
+<div class="toggle">🐌 Modalità lenta <input id="slow" type="checkbox"></div>
+<div class="toggle">🌙 Gravità bassa <input id="gravity" type="checkbox"></div>
+<div class="toggle">🧱 Niente ostacoli <input id="noobs" type="checkbox"></div>
+
+<button class="wide" id="addCoins">+10.000 🪙</button>
+<button class="wide" id="clearObs">Elimina ostacoli</button>
+
+</div>
+
+<button class="wide closeAll" style="background:#9b2850">CHIUDI</button>
+</div>
+</div>
+
+<div class="overlay" id="revivePanel">
+<div class="card revive">
+<h2>💥 HAI COLPITO UN OSTACOLO!</h2>
+<p id="reviveText"></p>
+<div class="timer" id="reviveTimer">10</div>
+<div class="reviveBtns">
+<button class="yes" id="reviveYes">❤️ CONTINUA</button>
+<button class="no" id="reviveNo">💀 GAME OVER</button>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const c=document.getElementById("game"),ctx=c.getContext("2d");
-const W=1200,H=650,ground=535;
-let player,obstacles,particles,score,coins,best,spawnTimer,last=0,gameOver=false,running=true;
-let worldX=0;
+const SUPABASE_URL="https://xxnnejcfxdqvdylccwnb.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_iZ1rVfXEHcnNx4W-eU26Zw_zZ6GHdSO";
+const PROMO_FUNCTION="dynamic-worker";
 
-// Salvataggio Unificato Automatico
+const sb=window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+const c=document.getElementById("game");
+const ctx=c.getContext("2d");
+
+const W=1200;
+const H=650;
+const ground=535;
 const saveKey="gdMiniSaveV4";
-const data=JSON.parse(localStorage.getItem(saveKey)||"{}");
-coins=data.coins||0; 
-best=data.best||0;
-let owned=data.owned||["classic"], selected=data.selected||"classic";
-let redeemedCodes=data.redeemedCodes||[];
+
+let player;
+let obstacles=[];
+let particles=[];
+let score=0;
+let coins=0;
+let best=0;
+let spawnTimer=.9;
+let last=0;
+let gameOver=false;
+let running=true;
+let worldX=0;
+let runLives=0;
+let waitingRevive=false;
+let reviveTimer=10;
+let reviveInterval=null;
+
+const saved=JSON.parse(
+localStorage.getItem(saveKey)||"{}"
+);
+
+coins=Number(saved.coins)||0;
+best=Number(saved.best)||0;
+
+let owned=Array.isArray(saved.owned)
+?saved.owned
+:["classic"];
+
+let selected=saved.selected||"classic";
 
 const skins=[
- {id:"classic",name:"Classico",rarity:"Comune",rarityClass:"r-comune",cost:0,color:"#ffdf27",accent:"#111",emoji:"🟨"},
- {id:"ruby",name:"Rubino",rarity:"Rara",rarityClass:"r-rara",cost:500,color:"#ff3d63",accent:"#fff",emoji:"🟥"},
- {id:"cyan",name:"Ciano",rarity:"Rara",rarityClass:"r-rara",cost:800,color:"#25d9ff",accent:"#09202a",emoji:"🟦"},
- {id:"emerald",name:"Smeraldo",rarity:"Epica",rarityClass:"r-epica",cost:2000,color:"#10b981",accent:"#022c22",emoji:"🟩"},
- {id:"purple",name:"Viola Reale",rarity:"Epica",rarityClass:"r-epica",cost:3500,color:"#a855f7",accent:"#fff",emoji:"🟪"},
- {id:"gold",name:"Oro Puro",rarity:"Leggendario",rarityClass:"r-leggendario",cost:6000,color:"#eab308",accent:"#351b00",emoji:"🟧"},
- {id:"cyber",name:"Cyber Neon",rarity:"Leggendario",rarityClass:"r-leggendario",cost:10000,color:"#f43f5e",accent:"#00f0ff",emoji:"🤖"},
- {id:"mythic_fire",name:"Fiamma Mitica",rarity:"Mitica",rarityClass:"r-mitica",cost:20000,color:"#ff4500",accent:"#ffff00",emoji:"🔥"},
- {id:"prism",name:"Prisma Galattico",rarity:"Prismatica",rarityClass:"r-prismatica",cost:40000,color:"#06b6d4",accent:"#ff007f",emoji:"💎"},
- {id:"ultra_god",name:"Dio Supremo",rarity:"Ultraleggendario",rarityClass:"r-ultraleggendario",cost:75000,color:"#ff8c00",accent:"#ffffff",emoji:"👑"}
-];
+["classic","Classico","Comune","r-comune",0,"#ffdf27","#111","🟨",0],
+["ruby","Rubino","Rara","r-rara",500,"#ff3d63","#fff","🟥",0],
+["cyan","Ciano","Rara","r-rara",800,"#25d9ff","#09202a","🟦",0],
+["emerald","Smeraldo","Epica","r-epica",2000,"#10b981","#022c22","🟩",0],
+["purple","Viola Reale","Epica","r-epica",3500,"#a855f7","#fff","🟪",0],
+["gold","Oro Puro","Leggendario","r-leggendario",6000,"#eab308","#351b00","🟧",0],
+["cyber","Cyber Neon","Leggendario","r-leggendario",10000,"#f43f5e","#00f0ff","🤖",0],
+["ice","Gelo Artico","Leggendario","r-leggendario",12000,"#67e8f9","#083344","❄️",0],
+["shadow","Ombra Oscura","Mitica","r-mitica",15000,"#312e81","#c4b5fd","🌑",0],
+["toxic","Tossico","Mitica","r-mitica",18000,"#84cc16","#17200a","☢️",0],
+["mythic_fire","Fiamma Mitica","Mitica","r-mitica",25000,"#ff4500","#ffff00","🔥",0],
+["ocean","Oceano Abissale","Mitica","r-mitica",28000,"#0284c7","#67e8f9","🌊",0],
+["thunder","Tuono Supremo","Prismatica","r-prismatica",35000,"#facc15","#38bdf8","⚡",0],
+["prism","Prisma Galattico","Prismatica","r-prismatica",50000,"#06b6d4","#ff007f","💎",0],
+["rainbow","Arcobaleno Cosmico","Prismatica","r-prismatica",55000,"#ec4899","#22d3ee","🌈",0],
+["void","Vuoto Stellare","Ultraleggendario","r-ultraleggendario",65000,"#111827","#a855f7","🌀",0],
+["dragon","Drago Celestiale","Ultraleggendario","r-ultraleggendario",70000,"#dc2626","#facc15","🐉",0],
+["ultra_god","Dio Supremo","Ultraleggendario","r-ultraleggendario",80000,"#ff8c00","#fff","👑",1],
+["sun","Sole Supremo","Ultraleggendario","r-ultraleggendario",90000,"#facc15","#fff7ed","☀️",2],
+["moon","Luna Eterna","Ultraleggendario","r-ultraleggendario",120000,"#6366f1","#e0e7ff","🌙",3],
+["phoenix","Fenice Immortale","Ultraleggendario","r-ultraleggendario",150000,"#ef4444","#fbbf24","🔥",4],
+["neutron","Neutrone","Ultraleggendario","r-ultraleggendario",200000,"#22d3ee","#fff","⚛️",5],
+["blackhole","Buco Nero","Ultraleggendario","r-ultraleggendario",250000,"#020617","#a855f7","🕳️",6],
+["diamond","Diamante Eterno","Ultraleggendario","r-ultraleggendario",350000,"#e0f2fe","#0ea5e9","💎",7],
+["cosmic","Entità Cosmica","Ultraleggendario","r-ultraleggendario",500000,"#7c3aed","#22d3ee","🌌",8],
+["infinity","Infinito","Ultraleggendario","r-ultraleggendario",750000,"#fff","#7c3aed","♾️",9],
+["secret","??? Segreta ???","Ultraleggendario","r-ultraleggendario",1000000,"#000","#fff","❓",10]
+].map(x=>({
+id:x[0],
+name:x[1],
+rarity:x[2],
+rarityClass:x[3],
+cost:x[4],
+color:x[5],
+accent:x[6],
+emoji:x[7],
+lives:x[8]
+}));
 
-const cheats={god:false,high:false,fast:false,slow:false,gravity:false,noobs:false};
+const cheats={
+god:false,
+high:false,
+fast:false,
+slow:false,
+gravity:false,
+noobs:false
+};
 
-function save(){
- localStorage.setItem(saveKey,JSON.stringify({coins,best,owned,selected,redeemedCodes}));
+function getSkin(){
+return skins.find(s=>s.id===selected)||skins[0];
 }
 
-function skin(){return skins.find(s=>s.id===selected)||skins[0]}
+function save(){
+localStorage.setItem(saveKey,JSON.stringify({
+coins,
+best,
+owned,
+selected
+}));
+}
+
+function updateUI(){
+scoreUI.textContent=Math.floor(score);
+bestUI.textContent=best;
+coinsUI.textContent=coins;
+livesUI.textContent=runLives;
+}
 
 function reset(){
- player={x:170,y:ground-48,w:48,h:48,vy:0,onGround:true,rot:0};
- obstacles=[];particles=[];score=0;spawnTimer=.9;gameOver=false;running=true;worldX=0;
- document.getElementById("bestUI").textContent=best;
+player={
+x:170,
+y:ground-48,
+w:48,
+h:48,
+vy:0,
+onGround:true,
+rot:0
+};
+
+obstacles=[];
+particles=[];
+score=0;
+spawnTimer=.9;
+gameOver=false;
+running=true;
+waitingRevive=false;
+worldX=0;
+runLives=getSkin().lives;
+
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=null;
+revivePanel.style.display="none";
+
+updateUI();
 }
 
 function jump(){
- if(gameOver){
-  reset();
-  return;
- }
- if(player.onGround){
-  player.vy=cheats.high?-950:-720;
-  player.onGround=false;
- }
+if(gameOver){
+reset();
+return;
+}
+
+if(!running||waitingRevive)
+return;
+
+if(player.onGround){
+player.vy=cheats.high?-950:-720;
+player.onGround=false;
+}
 }
 
 function addObstacle(){
- const type=Math.random();
- if(type<.72){
-  const h=25+Math.random()*55,w=30+Math.random()*22;
-  obstacles.push({x:W+60,y:ground-h,w,h});
- }else{
-  obstacles.push({x:W+60,y:ground-30,w:36,h:30});
-  obstacles.push({x:W+125,y:ground-30,w:36,h:30});
- }
+if(Math.random()<.72){
+let h=25+Math.random()*55;
+let w=30+Math.random()*22;
+
+obstacles.push({
+x:W+60,
+y:ground-h,
+w,
+h
+});
+}else{
+obstacles.push(
+{x:W+60,y:ground-30,w:36,h:30},
+{x:W+125,y:ground-30,w:36,h:30}
+);
+}
 }
 
-function pointInTri(px,py,t){
- const [a,b,c]=t;
- const d1=(px-b[0])*(a[1]-b[1])-(a[0]-b[0])*(py-b[1]);
- const d2=(px-c[0])*(b[1]-c[1])-(b[0]-c[0])*(py-c[1]);
- const d3=(px-a[0])*(c[1]-a[1])-(c[0]-a[0])*(py-a[1]);
- return (d1>=0&&d2>=0&&d3>=0)||(d1<=0&&d2<=0&&d3<=0);
-}
+function hit(o){
+const a=player.x+6;
+const b=player.y+6;
+const w=player.w-12;
+const h=player.h-12;
 
-function segHit(a,b,c,d){
- const cross=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
- const c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
- return ((c1>0&&c2<0)||(c1<0&&c2>0))&&((c3>0&&c4<0)||(c3<0&&c4>0));
-}
-
-function spikeHit(rect,o){
- const r=[ [rect.x,rect.y],[rect.x+rect.w,rect.y],
-           [rect.x+rect.w,rect.y+rect.h],[rect.x,rect.y+rect.h] ];
- const t=[[o.x,ground],[o.x+o.w/2,o.y],[o.x+o.w,ground]];
- if(t.some(p=>p[0]>=rect.x&&p[0]<=rect.x+rect.w&&p[1]>=rect.y&&p[1]<=rect.y+rect.h)) return true;
- if(r.some(p=>pointInTri(p[0],p[1],t))) return true;
- for(let i=0;i<3;i++) if(segHit(t[i],t[(i+1)%3],r[i],r[(i+1)%4])) return true;
- return false;
+return(
+a<o.x+o.w&&
+a+w>o.x&&
+b+h>o.y
+);
 }
 
 function burst(x,y){
- for(let i=0;i<35;i++){
-  particles.push({x,y,vx:(Math.random()-.5)*700,vy:(Math.random()-.8)*700,life:.75,size:4+Math.random()*6});
- }
+for(let i=0;i<35;i++){
+particles.push({
+x,
+y,
+vx:(Math.random()-.5)*700,
+vy:(Math.random()-.8)*700,
+life:.75,
+size:4+Math.random()*6
+});
+}
 }
 
 function die(){
- if(gameOver)return;
- gameOver=true;
- running=false;
- burst(player.x+24,player.y+24);
- best=Math.max(best,Math.floor(score));
- document.getElementById("bestUI").textContent=best;
- save();
+if(gameOver||waitingRevive)
+return;
+
+burst(player.x+24,player.y+24);
+
+best=Math.max(best,Math.floor(score));
+
+if(runLives>0){
+runLives--;
+openRevive(false);
+}else{
+openRevive(true);
+}
+
+save();
+updateUI();
+}
+
+function openRevive(buy){
+waitingRevive=true;
+running=false;
+
+reviveText.textContent=buy
+?"Non hai vite. Paga 5.000 🪙 per continuare."
+:"Hai usato una vita! Continua mantenendo il punteggio.";
+
+reviveYes.textContent=buy
+?"❤️ PAGA 5.000 🪙 E CONTINUA"
+:"❤️ CONTINUA";
+
+revivePanel.style.display="flex";
+reviveTimer=10;
+document.getElementById("reviveTimer").textContent=10;
+
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=setInterval(()=>{
+reviveTimer--;
+document.getElementById("reviveTimer").textContent=reviveTimer;
+
+if(reviveTimer<=0){
+clearInterval(reviveInterval);
+reviveInterval=null;
+finishGameOver();
+}
+},1000);
+}
+
+function continueGame(){
+if(!waitingRevive)
+return;
+
+let pay=reviveYes.textContent.includes("5.000");
+
+if(pay){
+if(coins<5000){
+alert("Non hai abbastanza monete! Servono 5.000 🪙.");
+return;
+}
+
+coins-=5000;
+runLives=1;
+}
+
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=null;
+waitingRevive=false;
+running=true;
+
+player.y=ground-player.h;
+player.vy=0;
+player.onGround=true;
+player.rot=0;
+
+obstacles=[];
+particles=[];
+
+revivePanel.style.display="none";
+
+save();
+updateUI();
+}
+
+function finishGameOver(){
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=null;
+waitingRevive=false;
+running=false;
+gameOver=true;
+
+revivePanel.style.display="none";
+
+best=Math.max(best,Math.floor(score));
+
+save();
+updateUI();
 }
 
 function update(dt){
- if(!running){
-  particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=1100*dt;p.life-=dt});
-  particles=particles.filter(p=>p.life>0);
-  return;
- }
+if(!running){
+particles.forEach(p=>{
+p.x+=p.vx*dt;
+p.y+=p.vy*dt;
+p.vy+=1100*dt;
+p.life-=dt;
+});
 
- const oldScore=Math.floor(score);
- score+=dt*10;
- const newScore=Math.floor(score);
- if(newScore>oldScore){
-  coins += newScore-oldScore;
-  save();
- }
- coins=Math.max(coins,0);
- 
- document.getElementById("scoreUI").textContent=Math.floor(score);
- document.getElementById("coinsUI").textContent=coins;
- document.getElementById("bestUI").textContent=best;
+particles=particles.filter(p=>p.life>0);
+return;
+}
 
- spawnTimer-=dt;
- let base=390+score*1.6,actual=base;
- if(cheats.fast)actual*=1.65;if(cheats.slow)actual*=.55;
- 
- if(spawnTimer<=0){
-  if(!cheats.noobs)addObstacle();
-  spawnTimer=.72+Math.random()*.7;
- }
+score+=dt*10;
 
- const grav=cheats.gravity?700:2100;
- player.vy+=grav*dt;
- player.y+=player.vy*dt;
+coins+=Math.floor(score)-Math.floor(score-dt*10);
 
- if(player.y+player.h>=ground){
-  player.y=ground-player.h;
-  player.vy=0;
-  player.onGround=true;
-  player.rot=0;
- } else {
-  player.onGround=false;
-  player.rot+=dt*9;
- }
+let speed=390+score*1.6;
 
- obstacles.forEach(o=>o.x-=actual*dt);
- obstacles=obstacles.filter(o=>o.x+o.w>-50);
+if(cheats.fast)
+speed=650;
 
- if(!cheats.god){
-  const hb={x:player.x+6,y:player.y+6,w:player.w-12,h:player.h-12};
-  for(const o of obstacles){
-   if(spikeHit(hb,o)){
-    die();
-    break;
-   }
-  }
- }
+if(cheats.slow)
+speed*=.55;
+
+spawnTimer-=dt;
+
+if(spawnTimer<=0){
+if(!cheats.noobs)
+addObstacle();
+
+spawnTimer=.72+Math.random()*.7;
+}
+
+player.vy+=(cheats.gravity?700:2100)*dt;
+player.y+=player.vy*dt;
+
+if(player.y+player.h>=ground){
+player.y=ground-player.h;
+player.vy=0;
+player.onGround=true;
+}else{
+player.onGround=false;
+}
+
+player.rot=0;
+
+obstacles.forEach(o=>{
+o.x-=speed*dt;
+});
+
+obstacles=obstacles.filter(o=>o.x+o.w>-50);
+
+if(!cheats.god){
+for(const o of obstacles){
+if(hit(o)){
+die();
+break;
+}
+}
+}
+
+updateUI();
 }
 
 function draw(){
- ctx.clearRect(0,0,W,H);
- 
- // Background
- const grad=ctx.createLinearGradient(0,0,0,H);
- grad.addColorStop(0,"#27276a");
- grad.addColorStop(1,"#09091b");
- ctx.fillStyle=grad;
- ctx.fillRect(0,0,W,H);
+ctx.clearRect(0,0,W,H);
 
- // Skyline Parallasse
- for(let i=0;i<16;i++){
-  let x=(i*100-(worldX*.18)%100);
-  let h=50+(i%5)*25;
-  ctx.fillStyle="rgba(100,100,190,.14)";
-  ctx.fillRect(x,ground-h,75,h);
- }
+let g=ctx.createLinearGradient(0,0,0,H);
+g.addColorStop(0,"#27276a");
+g.addColorStop(1,"#09091b");
 
- // Griglia dello Sfondo
- ctx.strokeStyle="rgba(255,255,255,.065)";
- ctx.lineWidth=1;
- for(let x=-(worldX%60);x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
- for(let y=55;y<ground;y+=55){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+ctx.fillStyle=g;
+ctx.fillRect(0,0,W,H);
 
- // Terreno
- ctx.fillStyle="#20d8b0";
- ctx.fillRect(0,ground,W,H-ground);
- ctx.fillStyle="#d8fff8";
- ctx.fillRect(0,ground,W,5);
+for(let i=0;i<16;i++){
+let x=i*100-(worldX*.18)%100;
+let h=50+(i%5)*25;
 
- for(let x=-(worldX%70);x<W;x+=70){
-  ctx.fillStyle="rgba(0,0,0,.16)";
-  ctx.beginPath();
-  ctx.moveTo(x,ground+5);
-  ctx.lineTo(x+35,ground+5);
-  ctx.lineTo(x+5,ground+45);
-  ctx.lineTo(x-30,ground+45);
-  ctx.closePath();
-  ctx.fill();
- }
+ctx.fillStyle="#6464be24";
+ctx.fillRect(x,ground-h,75,h);
+}
 
- // Ostacoli
- obstacles.forEach(o=>{
-  ctx.fillStyle="#ff4168";
-  ctx.beginPath();
-  ctx.moveTo(o.x,ground);
-  ctx.lineTo(o.x+o.w/2,o.y);
-  ctx.lineTo(o.x+o.w,ground);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle="#fff";
-  ctx.lineWidth=3;
-  ctx.stroke();
- });
+ctx.strokeStyle="#ffffff10";
 
- // Giocatore (Skin)
- const s=skin();
- if(running || particles.length > 0) {
-  ctx.save();
-  ctx.translate(player.x+24,player.y+24);
-  ctx.rotate(player.rot);
-  ctx.shadowBlur=16;
-  ctx.shadowColor=s.color;
-  ctx.fillStyle=s.color;
-  ctx.fillRect(-24,-24,48,48);
-  ctx.shadowBlur=0;
-  ctx.strokeStyle="#111";
-  ctx.lineWidth=5;
-  ctx.strokeRect(-24,-24,48,48);
-  
-  // Dettagli Skin
-  ctx.fillStyle=s.accent;
-  ctx.fillRect(-14,-11,8,8);
-  ctx.fillRect(6,-11,8,8);
-  ctx.fillRect(-12,7,24,5);
-  ctx.restore();
- }
+for(let x=-(worldX%60);x<W;x+=60){
+ctx.beginPath();
+ctx.moveTo(x,0);
+ctx.lineTo(x,H);
+ctx.stroke();
+}
 
- // Particelle
- particles.forEach(p=>{
-  ctx.globalAlpha=Math.max(0,p.life*1.7);
-  ctx.fillStyle=s.color;
-  ctx.fillRect(p.x,p.y,p.size,p.size);
-  ctx.globalAlpha=1;
- });
+for(let y=55;y<ground;y+=55){
+ctx.beginPath();
+ctx.moveTo(0,y);
+ctx.lineTo(W,y);
+ctx.stroke();
+}
 
- // Schermata Game Over
- if(gameOver){
-  ctx.fillStyle="rgba(0,0,0,.75)";
-  ctx.fillRect(0,0,W,H);
-  ctx.textAlign="center";
-  ctx.fillStyle="#fff";
-  ctx.font="bold 60px Arial";
-  ctx.fillText("GAME OVER",W/2,240);
-  ctx.font="22px Arial";
-  ctx.fillText("Tocca lo schermo o premi Spazio per riprovare",W/2,295);
-  ctx.font="18px Arial";
-  ctx.fillStyle="#ffd700";
-  ctx.fillText("Punteggio: "+Math.floor(score)+"  |  🏅 Record: "+best,W/2,335);
-  ctx.textAlign="left";
- }
+ctx.fillStyle="#20d8b0";
+ctx.fillRect(0,ground,W,H-ground);
 
- if(running) worldX+=1;
+ctx.fillStyle="#d8fff8";
+ctx.fillRect(0,ground,W,5);
+
+obstacles.forEach(o=>{
+ctx.fillStyle="#ff4168";
+
+ctx.beginPath();
+ctx.moveTo(o.x,ground);
+ctx.lineTo(o.x+o.w/2,o.y);
+ctx.lineTo(o.x+o.w,ground);
+ctx.closePath();
+
+ctx.fill();
+
+ctx.strokeStyle="#fff";
+ctx.lineWidth=3;
+ctx.stroke();
+});
+
+let s=getSkin();
+
+ctx.save();
+
+ctx.translate(player.x+24,player.y+24);
+
+ctx.fillStyle=s.color;
+ctx.shadowBlur=16;
+ctx.shadowColor=s.color;
+
+ctx.fillRect(-24,-24,48,48);
+
+ctx.shadowBlur=0;
+ctx.strokeStyle="#111";
+ctx.lineWidth=5;
+
+ctx.strokeRect(-24,-24,48,48);
+
+ctx.fillStyle=s.accent;
+
+ctx.fillRect(-14,-11,8,8);
+ctx.fillRect(6,-11,8,8);
+ctx.fillRect(-12,7,24,5);
+
+ctx.restore();
+
+particles.forEach(p=>{
+ctx.globalAlpha=Math.max(0,p.life*1.7);
+ctx.fillStyle=s.color;
+ctx.fillRect(p.x,p.y,p.size,p.size);
+ctx.globalAlpha=1;
+});
+
+if(gameOver){
+ctx.fillStyle="#000b";
+ctx.fillRect(0,0,W,H);
+
+ctx.textAlign="center";
+ctx.fillStyle="#fff";
+ctx.font="bold 60px Arial";
+
+ctx.fillText("GAME OVER",W/2,240);
+
+ctx.font="22px Arial";
+
+ctx.fillText(
+"Tocca lo schermo o premi Spazio per riprovare",
+W/2,
+295
+);
+
+ctx.fillStyle="#ffd700";
+ctx.font="18px Arial";
+
+ctx.fillText(
+"Punteggio: "+Math.floor(score)+" | 🏅 Record: "+best,
+W/2,
+335
+);
+
+ctx.textAlign="left";
+}
+
+if(running)
+worldX+=1;
 }
 
 function loop(t){
- let dt=Math.min((t-last)/1000,.033);
- last=t;
- update(dt);
- draw();
- requestAnimationFrame(loop);
+let dt=Math.min((t-last)/1000,.033);
+last=t;
+
+update(dt);
+draw();
+
+requestAnimationFrame(loop);
 }
 
-// Eventi Controllo
 addEventListener("keydown",e=>{
- if(["Space","ArrowUp"].includes(e.code)){
-  e.preventDefault();
-  jump();
- }
- if(e.code==="KeyR") reset();
+if(["Space","ArrowUp"].includes(e.code)){
+e.preventDefault();
+jump();
+}
+
+if(e.code==="KeyR")
+reset();
 });
 
 c.addEventListener("pointerdown",jump);
 
-// Salvataggio Continuo
-addEventListener("beforeunload",()=>save());
-addEventListener("pagehide",()=>save());
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")save();});
+addEventListener("pagehide",save);
+addEventListener("beforeunload",save);
+
 setInterval(save,3000);
 
-// UI Modals
 const shop=document.getElementById("shop");
-const admin=document.getElementById("adminPanel");
 const promo=document.getElementById("promoPanel");
+const admin=document.getElementById("adminPanel");
 
-document.getElementById("shopBtn").onclick=()=>{renderShop();shop.style.display="flex"};
-document.getElementById("adminBtn").onclick=()=>admin.style.display="flex";
-document.getElementById("promoBtn").onclick=()=>promo.style.display="flex";
+shopBtn.onclick=()=>{
+renderShop();
+shop.style.display="flex";
+};
 
-document.getElementById("shopX").onclick=()=>shop.style.display="none";
-document.getElementById("adminX").onclick=()=>admin.style.display="none";
-document.getElementById("promoX").onclick=()=>promo.style.display="none";
+promoBtn.onclick=()=>{
+promo.style.display="flex";
+};
 
-document.querySelectorAll(".close").forEach(b=>b.onclick=()=>{
- shop.style.display="none";
- admin.style.display="none";
- promo.style.display="none";
+adminBtn.onclick=()=>{
+admin.style.display="flex";
+};
+
+shopX.onclick=()=>{
+shop.style.display="none";
+};
+
+promoX.onclick=()=>{
+promo.style.display="none";
+};
+
+adminX.onclick=()=>{
+admin.style.display="none";
+};
+
+document.querySelectorAll(".closeAll").forEach(b=>
+b.onclick=()=>{
+shop.style.display="none";
+promo.style.display="none";
+admin.style.display="none";
 });
 
-// Render Negozio Skin con Rarità
 function renderShop(){
- const g=document.getElementById("skinGrid");
- g.innerHTML="";
- skins.forEach(s=>{
-  const isOwned=owned.includes(s.id),isSel=selected===s.id;
-  const div=document.createElement("div");
-  div.className=`skin ${s.rarityClass}`;
-  
-  div.innerHTML=`
-   <div>
-    <span class="rarity-tag">${s.rarity}</span>
-    <div class="preview" style="background:${s.color};box-shadow:0 0 12px ${s.color}">${s.emoji}</div>
-    <b>${s.name}</b>
-    <div class="small" style="margin-top:4px">${s.cost? s.cost+" 🪙":"Gratis"}</div>
-   </div>
-  `;
-  
-  const b=document.createElement("button");
-  b.textContent=isSel?"EQUIPAGGIATA":isOwned?"EQUIPAGGIA":"COMPRA";
-  b.disabled=isSel;
-  
-  b.onclick=()=>{
-   if(isOwned){
-    selected=s.id;
-    save();
-    renderShop();
-   } else if(coins>=s.cost){
-    coins-=s.cost;
-    owned.push(s.id);
-    selected=s.id;
-    save();
-    renderShop();
-   } else {
-    alert("Non hai abbastanza monete!");
-   }
-  };
-  div.appendChild(b);
-  g.appendChild(div);
- });
+skinGrid.innerHTML="";
+
+skins.forEach(s=>{
+let ownedNow=owned.includes(s.id);
+let selectedNow=selected===s.id;
+
+let d=document.createElement("div");
+
+d.className="skin "+s.rarityClass;
+
+d.innerHTML=
+`<span class="rarity-tag">${s.rarity}</span>
+<div class="preview" style="background:${s.color};box-shadow:0 0 12px ${s.color}">
+${s.emoji}
+</div>
+<b>${s.name}</b>
+<div class="small">
+${s.cost?s.cost.toLocaleString("it-IT")+" 🪙":"Gratis"}
+</div>
+<div style="color:#ff6b9d;font-weight:bold">
+❤️ ${s.lives}
+</div>`;
+
+let b=document.createElement("button");
+
+b.textContent=selectedNow
+?"EQUIPAGGIATA"
+:ownedNow
+?"EQUIPAGGIA"
+:"COMPRA";
+
+b.disabled=selectedNow;
+
+b.onclick=()=>{
+if(ownedNow){
+selected=s.id;
+save();
+renderShop();
+return;
 }
 
-// Codici Promo
-document.getElementById("redeemBtn").onclick=()=>{
- const codeInput=document.getElementById("promoCode");
- const code=codeInput.value.trim();
- const msg=document.getElementById("promoMsg");
- 
- if(!code){
-  msg.style.color="#ff4500";
-  msg.textContent="⚠️ Inserisci un codice valido!";
-  return;
- }
- 
- if(redeemedCodes.includes(code)){
-  msg.style.color="#ff4500";
-  msg.textContent="❌ Hai già riscattato questo codice!";
-  return;
- }
+if(coins>=s.cost){
+coins-=s.cost;
+owned.push(s.id);
+selected=s.id;
 
- if(code==="1winner"){
-  coins+=10000;
-  redeemedCodes.push(code);
-  save();
-  document.getElementById("coinsUI").textContent=coins;
-  msg.style.color="#10b981";
-  msg.textContent="🎉 Codice Sbloccato! +10.000 Monete!";
-  codeInput.value="";
- } else {
-  msg.style.color="#ff4500";
-  msg.textContent="❌ Codice promozionale non valido!";
- }
+save();
+renderShop();
+updateUI();
+
+alert("🎉 Hai ottenuto "+s.name+"!");
+}else{
+alert("Servono "+s.cost.toLocaleString("it-IT")+" 🪙.");
+}
 };
 
-// Admin Panel Login e Cheats
-document.getElementById("unlock").onclick=()=>{
- if(document.getElementById("key").value==="ANDRE_29_KEY"){
-  document.getElementById("login").style.display="none";
-  document.getElementById("cheats").style.display="block";
- }else{
-  document.getElementById("msg").textContent="❌ Chiave errata";
- }
-};
-
-["god","high","fast","slow","gravity","noobs"].forEach(id=>{
- document.getElementById(id).onchange=e=>cheats[id]=e.target.checked;
+d.appendChild(b);
+skinGrid.appendChild(d);
 });
+}
 
-document.getElementById("addCoins").onclick=()=>{
- coins+=10000;
- save();
- document.getElementById("coinsUI").textContent=coins;
+function getPlayerId(){
+let id=localStorage.getItem("gdMiniPlayerId");
+
+if(!id){
+id=crypto.randomUUID
+?crypto.randomUUID()
+:"p_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+
+localStorage.setItem("gdMiniPlayerId",id);
+}
+
+return id;
+}
+
+const playerId=getPlayerId();
+
+redeemBtn.onclick=async()=>{
+let code=promoCode.value.trim();
+let m=promoMsg;
+
+m.textContent="Controllo...";
+
+try{
+const {data,error}=await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"redeem",
+code,
+playerId
+}
+}
+);
+
+if(error)
+throw error;
+
+if(!data?.ok)
+throw new Error(data?.error||"Codice non valido");
+
+coins+=Number(data.reward_coins)||0;
+
+save();
+updateUI();
+
+m.style.color="#10b981";
+
+m.textContent=
+"🎉 Codice sbloccato! +"+
+Number(data.reward_coins).toLocaleString("it-IT")+
+" 🪙";
+
+promoCode.value="";
+
+}catch(e){
+m.style.color="#ff4500";
+m.textContent="❌ "+(e.message||"Errore");
+}
 };
 
-document.getElementById("clearObs").onclick=()=>obstacles=[];
+unlock.onclick=async()=>{
+msg.textContent="Controllo...";
 
-// Inizio
-reset();
-requestAnimationFrame(loop);
-</script>
-</body>
-  </html>
-  
+try{
+const {data,error}=await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"admin_check",
+adminKey:key.value
+}
+}
+);
+
+if(error||!data?.ok)
+throw new Error("Chiave errata");
+
+login.style.display="none";
+adminArea.style.display="block";
+adminArea.dataset.key=key.value;
+
+loadPromos();
+
+}catch(e){
+msg.textContent="❌ Chiave errata";
+}
+};
+
+createPromo.onclick=async()=>{
+createMsg.textContent="Creazione...";
+
+try{
+const {data,error}=await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"create",
+adminKey:adminArea.dataset.key,
+code:newCode.value,
+reward:Number(newReward.value)
+}
+}
+);
+
+if(error)
+throw error;
+
+if(!data?.ok)
+throw new Error(data?.error||"Errore");
+
+createMsg.style.color="#10b981";
+createMsg.textContent="✅ Codice creato: "+data.promo.code;
+
+newCode.value="";
+newReward.value="";
+
+loadPromos();
+
+}catch(e){
+createMsg.style.color="#ff4500";
+createMsg.textContent="❌ "+(e.message||"Errore");
+}
+};
+
+async function loadPromos(){
+const {data,error}=await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"list",
+adminKey:adminArea.dataset.key
+}
+}
+);
+
+if(error||!data?.ok){
+promoList.textContent="Errore caricamento codici";
+return;
+}
+
+promoList.innerHTML="<h3>📋 Codici creati</h3>";
+
+(d
