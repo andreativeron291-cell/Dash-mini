@@ -1,956 +1,3234 @@
-<!DOCTYPE html>  <html lang="it">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">  
-<title>Geometry Dash Mini Deluxe</title>  
-<style>  
-*{box-sizing:border-box}  
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070714;color:#fff;font-family:Arial,sans-serif}  
-body{touch-action:none}  
-canvas{position:fixed;inset:0;width:100%;height:100%;display:block}  
-button{font:inherit;color:#fff;border:0;cursor:pointer}  
-#top{position:fixed;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;z-index:3;gap:8px;pointer-events:none}  
-.badges{display:flex;gap:8px;flex-wrap:wrap}  
-.badge{background:rgba(8,8,25,.9);border:1px solid #ffffff44;border-radius:12px;padding:8px 12px;font-weight:bold}  
-#buttons{position:fixed;right:12px;bottom:12px;display:flex;gap:8px;z-index:4}  
-.icon{width:52px;height:52px;border-radius:15px;background:#141430e8;border:2px solid #fff;font-size:23px}  
-.overlay{display:none;position:fixed;inset:0;background:#000d;z-index:10;align-items:center;justify-content:center;padding:15px}  
-.card{width:min(94vw,560px);max-height:90vh;overflow:auto;background:linear-gradient(#20204a,#101025);border:2px solid #fff;border-radius:20px;padding:20px;box-shadow:0 15px 60px #000;position:relative}  
-.card h2{text-align:center;margin:0 0 15px}  
-.x{position:absolute;right:12px;top:10px;width:38px;height:38px;border-radius:50%;background:#9b2850;font-size:26px}  
-.small{text-align:center;color:#bbb;font-size:13px}  
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}  
-.skin{background:#0c0c20;border:2px solid #555;border-radius:15px;padding:10px;text-align:center}  
-.preview{width:55px;height:55px;margin:5px auto 8px;border:3px solid #111;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px}  
-.skin button,.wide{width:100%;padding:10px;margin-top:8px;border-radius:9px;background:#30306b;font-weight:bold}  
-input{width:100%;padding:11px;border-radius:9px;border:1px solid #777;background:#080812;color:#fff;margin-bottom:8px;font-size:15px}  
-.toggle{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #333}  
-.admin-list{margin-top:12px}  
-.promo-row{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #444;padding:8px 0;font-size:13px}  
-.promo-row button{background:#9b2850;padding:7px 9px;border-radius:8px}  
-.rarity-tag{font-size:10px;font-weight:bold;text-transform:uppercase;padding:2px 7px;border-radius:10px}  
-.r-comune{border-color:#aaa}  
-.r-rara{border-color:#3b82f6}  
-.r-epica{border-color:#a855f7}  
-.r-leggendario{border-color:#eab308}  
-.r-mitica{border-color:#ec4899}  
-.r-prismatica{border-color:#06b6d4;box-shadow:0 0 10px #06b6d4}  
-.r-ultraleggendario{border-color:#ff4500;box-shadow:0 0 12px #ff4500}  
-.r-comune .rarity-tag{background:#555}  
-.r-rara .rarity-tag{background:#2563eb}  
-.r-epica .rarity-tag{background:#9333ea}  
-.r-leggendario .rarity-tag{background:#ca8a04}  
-.r-mitica .rarity-tag{background:#db2777}  
-.r-prismatica .rarity-tag{background:#06b6d4}  
-.r-ultraleggendario .rarity-tag{background:#ff8c00;color:#000}  
-#revivePanel{z-index:20}  
-.revive{text-align:center}  
-.timer{font-size:54px;font-weight:bold;color:#ffd700;margin:10px}  
-.reviveBtns{display:flex;gap:10px}  
-.reviveBtns button{flex:1;padding:13px;border-radius:12px;font-weight:bold}  
-.yes{background:#16a34a}  
-.no{background:#9b2850}  
-@media(max-width:500px){  
-.badge{padding:7px 9px;font-size:14px}  
-.icon{width:50px;height:50px}  
-}  
-</style>  
-</head>  
-<body>  <canvas id="game" width="1200" height="650"></canvas>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Geometry Dash Mini Deluxe</title>
 
-<div id="top">  
-<div class="badges">  
-<div class="badge">⭐ <span id="scoreUI">0</span></div>  
-<div class="badge">🏅 <span id="bestUI">0</span></div>  
-<div class="badge">❤️ <span id="livesUI">0</span></div>  
-</div>  
-<div class="badge">🪙 <span id="coinsUI">0</span></div>  
-</div>  <div id="buttons">  
-<button class="icon" id="shopBtn">🛒</button>  
-<button class="icon" id="promoBtn">🎁</button>  
-<button class="icon" id="adminBtn">⚙️</button>  
-</div>  <div class="overlay" id="shop">  
-<div class="card">  
-<button class="x" id="shopX">×</button>  
-<h2>🛒 NEGOZIO SKIN</h2>  
-<p class="small">Più costa la skin, più vite può avere!</p>  
-<div class="grid" id="skinGrid"></div>  
-<button class="wide closeAll">CHIUDI</button>  
-</div>  
-</div>  <div class="overlay" id="promoPanel">  
-<div class="card">  
-<button class="x" id="promoX">×</button>  
-<h2>🎁 CODICI PROMOZIONALI</h2>  
-<p class="small">Inserisci un codice globale.</p>  
-<input id="promoCode" placeholder="Inserisci codice...">  
-<button class="wide" id="redeemBtn" style="background:#2563eb">RISCATTA CODICE</button>  
-<p id="promoMsg" class="small"></p>  
-<button class="wide closeAll" style="background:#9b2850">CHIUDI</button>  
-</div>  
-</div>  <div class="overlay" id="adminPanel">  
-<div class="card">  
-<button class="x" id="adminX">×</button>  
-<h2>🔐 ADMIN PANEL</h2>  <div id="login">  
-<input id="key" type="password" placeholder="Chiave admin">  
-<button class="wide" id="unlock">SBLOCCA</button>  
-<p id="msg" class="small"></p>  
-</div>  <div id="adminArea" style="display:none">  <h3>🎁 Crea codice globale</h3>  
-<input id="newCode" placeholder="Esempio: SUPERWIN">  
-<input id="newReward" type="number" min="0" placeholder="Monete premio">  <button class="wide" id="createPromo" style="background:#16a34a">  
-CREA CODICE  
-</button>  <p id="createMsg" class="small"></p>  
-<div id="promoList" class="admin-list"></div>  <h3>⚙️ Cheats</h3>  <div class="toggle">👻 Invincibilità <input id="god" type="checkbox"></div>  
-<div class="toggle">🚀 Salto alto <input id="high" type="checkbox"></div>  
-<div class="toggle">⚡ Super velocità <input id="fast" type="checkbox"></div>  
-<div class="toggle">🐌 Modalità lenta <input id="slow" type="checkbox"></div>  
-<div class="toggle">🌙 Gravità bassa <input id="gravity" type="checkbox"></div>  
-<div class="toggle">🧱 Niente ostacoli <input id="noobs" type="checkbox"></div>  <button class="wide" id="addCoins">+10.000 🪙</button>
-<button class="wide" id="clearObs">Elimina ostacoli</button>
+<style>
+*{box-sizing:border-box}
 
-</div>  <button class="wide closeAll" style="background:#9b2850">CHIUDI</button>
+html,body{
+margin:0;
+width:100%;
+height:100%;
+overflow:hidden;
+background:#070714;
+color:#fff;
+font-family:Arial,sans-serif
+}
 
-</div>  
-</div>  <div class="overlay" id="revivePanel">  
-<div class="card revive">  
-<h2>💥 HAI COLPITO UN OSTACOLO!</h2>  
-<p id="reviveText"></p>  
-<div class="timer" id="reviveTimer">10</div>  
-<div class="reviveBtns">  
-<button class="yes" id="reviveYes">❤️ CONTINUA</button>  
-<button class="no" id="reviveNo">💀 GAME OVER</button>  
-</div>  
-</div>  
-</div>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script>  
-const SUPABASE_URL="https://xxnnejcfxdqvdylccwnb.supabase.co";  
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_iZ1rVfXEHcnNx4W-eU26Zw_zZ6GHdSO";  
-const PROMO_FUNCTION="dynamic-worker";  
-  
-let sb=null;
+body{touch-action:none}
+
+canvas{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+display:block
+}
+
+button{
+font:inherit;
+color:#fff;
+border:0;
+cursor:pointer
+}
+
+#top{
+position:fixed;
+top:12px;
+left:12px;
+right:12px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+z-index:3;
+gap:8px;
+pointer-events:none
+}
+
+.badges{
+display:flex;
+gap:8px;
+flex-wrap:wrap
+}
+
+.badge{
+background:rgba(8,8,25,.9);
+border:1px solid #ffffff44;
+border-radius:12px;
+padding:8px 12px;
+font-weight:bold
+}
+
+#buttons{
+position:fixed;
+right:12px;
+bottom:12px;
+display:flex;
+gap:8px;
+z-index:4
+}
+
+#dimensionBtn{
+display:none;
+background:linear-gradient(135deg,#7c3aed,#06b6d4,#ec4899);
+box-shadow:0 0 22px #a855f7;
+animation:dimensionPulse 1s infinite alternate
+}
+
+@keyframes dimensionPulse{
+from{
+transform:scale(1);
+box-shadow:0 0 15px #06b6d4
+}
+to{
+transform:scale(1.12);
+box-shadow:0 0 35px #ec4899,0 0 60px #7c3aed
+}
+}
+
+.icon{
+width:52px;
+height:52px;
+border-radius:15px;
+background:#141430e8;
+border:2px solid #fff;
+font-size:23px
+}
+
+.overlay{
+display:none;
+position:fixed;
+inset:0;
+background:#000d;
+z-index:10;
+align-items:center;
+justify-content:center;
+padding:15px
+}
+
+.card{
+width:min(94vw,560px);
+max-height:90vh;
+overflow:auto;
+background:linear-gradient(#20204a,#101025);
+border:2px solid #fff;
+border-radius:20px;
+padding:20px;
+box-shadow:0 15px 60px #000;
+position:relative
+}
+
+.card h2{
+text-align:center;
+margin:0 0 15px
+}
+
+.x{
+position:absolute;
+right:12px;
+top:10px;
+width:38px;
+height:38px;
+border-radius:50%;
+background:#9b2850;
+font-size:26px
+}
+
+.small{
+text-align:center;
+color:#bbb;
+font-size:13px
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px
+}
+
+.skin{
+background:#0c0c20;
+border:2px solid #555;
+border-radius:15px;
+padding:10px;
+text-align:center
+}
+
+.preview{
+width:55px;
+height:55px;
+margin:5px auto 8px;
+border:3px solid #111;
+border-radius:8px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px
+}
+
+.skin button,.wide{
+width:100%;
+padding:10px;
+margin-top:8px;
+border-radius:9px;
+background:#30306b;
+font-weight:bold
+}
+
+.section-title{
+grid-column:1/-1;
+text-align:center;
+margin:8px 0 0;
+color:#ffd700;
+font-size:17px
+}
+
+.stripe-preview{
+height:14px;
+border-radius:99px;
+margin:8px 0;
+box-shadow:0 0 12px currentColor
+}
+
+.stripe-equipped{
+border-color:#ffd700!important;
+box-shadow:0 0 12px #ffd700
+}
+
+input{
+width:100%;
+padding:11px;
+border-radius:9px;
+border:1px solid #777;
+background:#080812;
+color:#fff;
+margin-bottom:8px;
+font-size:15px
+}
+
+.toggle{
+display:flex;
+justify-content:space-between;
+padding:11px 0;
+border-bottom:1px solid #333
+}
+
+.admin-list{
+margin-top:12px
+}
+
+.promo-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:8px;
+border-bottom:1px solid #444;
+padding:10px 0;
+font-size:13px
+}
+
+.promo-row>span{
+flex:1
+}
+
+.promo-buttons{
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+justify-content:flex-end
+}
+
+.promo-row button{
+background:#9b2850;
+padding:7px 9px;
+border-radius:8px
+}
+
+.rarity-tag{
+font-size:10px;
+font-weight:bold;
+text-transform:uppercase;
+padding:2px 7px;
+border-radius:10px
+}
+
+.r-comune{border-color:#aaa}
+.r-rara{border-color:#3b82f6}
+.r-epica{border-color:#a855f7}
+.r-leggendario{border-color:#eab308}
+.r-mitica{border-color:#ec4899}
+.r-prismatica{
+border-color:#06b6d4;
+box-shadow:0 0 10px #06b6d4
+}
+.r-ultraleggendario{
+border-color:#ff4500;
+box-shadow:0 0 12px #ff4500
+}
+
+.r-comune .rarity-tag{background:#555}
+.r-rara .rarity-tag{background:#2563eb}
+.r-epica .rarity-tag{background:#9333ea}
+.r-leggendario .rarity-tag{background:#ca8a04}
+.r-mitica .rarity-tag{background:#db2777}
+.r-prismatica .rarity-tag{background:#06b6d4}
+.r-ultraleggendario .rarity-tag{
+background:#ff8c00;
+color:#000
+}
+
+#revivePanel{z-index:20}
+
+.revive{text-align:center}
+
+.timer{
+font-size:54px;
+font-weight:bold;
+color:#ffd700;
+margin:10px
+}
+
+.reviveBtns{
+display:flex;
+gap:10px
+}
+
+.reviveBtns button{
+flex:1;
+padding:13px;
+border-radius:12px;
+font-weight:bold
+}
+
+.yes{background:#16a34a}
+.no{background:#9b2850}
+
+@media(max-width:500px){
+.badge{
+padding:7px 9px;
+font-size:14px
+}
+
+.icon{
+width:50px;
+height:50px
+}
+
+.promo-row{
+align-items:flex-start;
+flex-direction:column
+}
+
+.promo-buttons{
+width:100%
+}
+
+.promo-buttons button{
+flex:1
+}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game" width="1200" height="650"></canvas>
+
+<div id="top">
+<div class="badges">
+<div class="badge">⭐ <span id="scoreUI">0</span></div>
+<div class="badge">🏅 <span id="bestUI">0</span></div>
+<div class="badge">❤️ <span id="livesUI">0</span></div>
+</div>
+
+<div class="badge">
+🪙 <span id="coinsUI">0</span>
+</div>
+</div>
+
+<div id="buttons">
+<button class="icon" id="shopBtn">🛒</button>
+<button class="icon" id="promoBtn">🎁</button>
+<button class="icon" id="adminBtn">⚙️</button>
+<button class="icon" id="dimensionBtn">🌀</button>
+</div>
+
+<div class="overlay" id="shop">
+<div class="card">
+
+<button class="x" id="shopX">×</button>
+
+<h2>🛒 NEGOZIO</h2>
+
+<p class="small">
+Skin fino a 1 miliardo 🪙 + strisce con moltiplicatore di monete.
+</p>
+
+<div class="grid" id="skinGrid"></div>
+
+<div class="section-title">
+✨ STRISCE MOLTIPLICATRICI
+</div>
+
+<div class="grid" id="stripeGrid"></div>
+
+<button class="wide closeAll">
+CHIUDI
+</button>
+
+</div>
+</div>
+
+<div class="overlay" id="promoPanel">
+<div class="card">
+
+<button class="x" id="promoX">×</button>
+
+<h2>🎁 CODICI PROMOZIONALI</h2>
+
+<p class="small">
+Inserisci un codice globale.
+</p>
+
+<input
+id="promoCode"
+placeholder="Inserisci codice..."
+>
+
+<button
+class="wide"
+id="redeemBtn"
+style="background:#2563eb"
+>
+RISCATTA CODICE
+</button>
+
+<p id="promoMsg" class="small"></p>
+
+<button
+class="wide closeAll"
+style="background:#9b2850"
+>
+CHIUDI
+</button>
+
+</div>
+</div>
+
+<div class="overlay" id="adminPanel">
+<div class="card">
+
+<button class="x" id="adminX">×</button>
+
+<h2>🔐 ADMIN PANEL</h2>
+
+<div id="login">
+
+<input
+id="key"
+type="password"
+placeholder="Chiave admin"
+>
+
+<button class="wide" id="unlock">
+SBLOCCA
+</button>
+
+<p id="msg" class="small"></p>
+
+</div>
+
+<div id="adminArea" style="display:none">
+
+<h3>🎁 Crea codice globale</h3>
+
+<input
+id="newCode"
+placeholder="Esempio: SUPERWIN"
+>
+
+<input
+id="newReward"
+type="number"
+min="0"
+placeholder="Monete premio"
+>
+
+<button
+class="wide"
+id="createPromo"
+style="background:#16a34a"
+>
+CREA CODICE
+</button>
+
+<p id="createMsg" class="small"></p>
+
+<div id="promoList" class="admin-list"></div>
+
+<h3>⚙️ Cheats</h3>
+
+<div class="toggle">
+👻 Invincibilità
+<input id="god" type="checkbox">
+</div>
+
+<div class="toggle">
+🚀 Salto alto
+<input id="high" type="checkbox">
+</div>
+
+<div class="toggle">
+⚡ Super velocità
+<input id="fast" type="checkbox">
+</div>
+
+<div class="toggle">
+🐌 Modalità lenta
+<input id="slow" type="checkbox">
+</div>
+
+<div class="toggle">
+🌙 Gravità bassa
+<input id="gravity" type="checkbox">
+</div>
+
+<div class="toggle">
+🧱 Niente ostacoli
+<input id="noobs" type="checkbox">
+</div>
+
+<button class="wide" id="addCoins">
++10.000 🪙
+</button>
+
+<button class="wide" id="clearObs">
+Elimina ostacoli
+</button>
+
+</div>
+
+<button
+class="wide closeAll"
+style="background:#9b2850"
+>
+CHIUDI
+</button>
+
+</div>
+</div>
+
+<div class="overlay" id="revivePanel">
+<div class="card revive">
+
+<h2>
+💥 HAI COLPITO UN OSTACOLO!
+</h2>
+
+<p id="reviveText"></p>
+
+<div class="timer" id="reviveTimer">
+10
+</div>
+
+<div class="reviveBtns">
+
+<button class="yes" id="reviveYes">
+❤️ CONTINUA
+</button>
+
+<button class="no" id="reviveNo">
+💀 GAME OVER
+</button>
+
+</div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL=
+"https://xxnnejcfxdqvdylccwnb.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY=
+"sb_publishable_iZ1rVfXEHcnNx4W-eU26Zw_zZ6GHdSO";
+
+const PROMO_FUNCTION="dynamic-worker";
+
+const sb=
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
+const c=document.getElementById("game");
+
+const ctx=c.getContext("2d");
+
+const W=1200;
+const H=650;
+const ground=535;
+
+const saveKey="gdMiniSaveV4";
+
+let player;
+let obstacles=[];
+let particles=[];
+
+let score=0;
+let coins=0;
+let best=0;
+
+let spawnTimer=.9;
+let last=0;
+
+let gameOver=false;
+let running=true;
+let worldX=0;
+
+let runLives=0;
+let waitingRevive=false;
+let reviveTimer=10;
+let reviveInterval=null;
+
+const saved=
+JSON.parse(
+localStorage.getItem(saveKey)||"{}"
+);
+
+coins=Number(saved.coins)||0;
+best=Number(saved.best)||0;
+
+let owned=
+Array.isArray(saved.owned)
+?saved.owned
+:["classic"];
+
+let selected=
+saved.selected||"classic";
+
+let ownedStripes=
+Array.isArray(saved.ownedStripes)
+?saved.ownedStripes
+:["none"];
+
+let selectedStripe=
+saved.selectedStripe||"none";
+
+let coinBank=
+Number(saved.coinBank)||0;
+
+const skins=[
+
+["classic","Classico","Comune","r-comune",0,
+"#ffdf27","#111","🟨",0],
+
+["ruby","Rubino","Rara","r-rara",500,
+"#ff3d63","#fff","🟥",0],
+
+["cyan","Ciano","Rara","r-rara",800,
+"#25d9ff","#09202a","🟦",0],
+
+["emerald","Smeraldo","Epica","r-epica",2000,
+"#10b981","#022c22","🟩",0],
+
+["purple","Viola Reale","Epica","r-epica",3500,
+"#a855f7","#fff","🟪",0],
+
+["gold","Oro Puro","Leggendario","r-leggendario",6000,
+"#eab308","#351b00","🟧",0],
+
+["cyber","Cyber Neon","Leggendario","r-leggendario",10000,
+"#f43f5e","#00f0ff","🤖",0],
+
+["ice","Gelo Artico","Leggendario","r-leggendario",12000,
+"#67e8f9","#083344","❄️",0],
+
+["shadow","Ombra Oscura","Mitica","r-mitica",15000,
+"#312e81","#c4b5fd","🌑",0],
+
+["toxic","Tossico","Mitica","r-mitica",18000,
+"#84cc16","#17200a","☢️",0],
+
+["mythic_fire","Fiamma Mitica","Mitica","r-mitica",25000,
+"#ff4500","#ffff00","🔥",0],
+
+["ocean","Oceano Abissale","Mitica","r-mitica",28000,
+"#0284c7","#67e8f9","🌊",0],
+
+["thunder","Tuono Supremo","Prismatica","r-prismatica",35000,
+"#facc15","#38bdf8","⚡",0],
+
+["prism","Prisma Galattico","Prismatica","r-prismatica",50000,
+"#06b6d4","#ff007f","💎",0],
+
+["rainbow","Arcobaleno Cosmico","Prismatica","r-prismatica",55000,
+"#ec4899","#22d3ee","🌈",0],
+
+["void","Vuoto Stellare","Ultraleggendario","r-ultraleggendario",65000,
+"#111827","#a855f7","🌀",0],
+
+["dragon","Drago Celestiale","Ultraleggendario","r-ultraleggendario",70000,
+"#dc2626","#facc15","🐉",0],
+
+["ultra_god","Dio Supremo","Ultraleggendario","r-ultraleggendario",80000,
+"#ff8c00","#fff","👑",1],
+
+["sun","Sole Supremo","Ultraleggendario","r-ultraleggendario",90000,
+"#facc15","#fff7ed","☀️",2],
+
+["moon","Luna Eterna","Ultraleggendario","r-ultraleggendario",120000,
+"#6366f1","#e0e7ff","🌙",3],
+
+["phoenix","Fenice Immortale","Ultraleggendario","r-ultraleggendario",150000,
+"#ef4444","#fbbf24","🔥",4],
+
+["neutron","Neutrone","Ultraleggendario","r-ultraleggendario",200000,
+"#22d3ee","#fff","⚛️",5],
+
+["blackhole","Buco Nero","Ultraleggendario","r-ultraleggendario",250000,
+"#020617","#a855f7","🕳️",6],
+
+["diamond","Diamante Eterno","Ultraleggendario","r-ultraleggendario",350000,
+"#e0f2fe","#0ea5e9","💎",7],
+
+["cosmic","Entità Cosmica","Ultraleggendario","r-ultraleggendario",500000,
+"#7c3aed","#22d3ee","🌌",8],
+
+["infinity","Infinito","Ultraleggendario","r-ultraleggendario",750000,
+"#fff","#7c3aed","♾️",9],
+
+["secret","??? Segreta ???","Ultraleggendario","r-ultraleggendario",1000000,
+"#000","#fff","❓",10],
+
+["celestial","Celestiale Eterno","Ultraleggendario","r-ultraleggendario",2000000,
+"#38bdf8","#fff","🌠",11],
+
+["titan","Titano Cosmico","Ultraleggendario","r-ultraleggendario",5000000,
+"#7c3aed","#f0abfc","🗿",12],
+
+["galaxy","Galassia Suprema","Ultraleggendario","r-ultraleggendario",10000000,
+"#2563eb","#67e8f9","🌌",13],
+
+["dimension","Dimensione Infinita","Ultraleggendario","r-ultraleggendario",25000000,
+"#db2777","#f9a8d4","🌀",14],
+
+["eternity","Eternità","Ultraleggendario","r-ultraleggendario",50000000,
+"#f59e0b","#fff","♾️",15],
+
+["overlord","Signore Supremo","Ultraleggendario","r-ultraleggendario",100000000,
+"#ef4444","#fde047","👁️",16],
+
+["omega","Omega","Ultraleggendario","r-ultraleggendario",250000000,
+"#111827","#22d3ee","Ω",18],
+
+["absolute","Assoluto","Ultraleggendario","r-ultraleggendario",500000000,
+"#581c87","#f0abfc","🔱",20],
+
+["infinite_god","Dio dellInfinito","Ultraleggendario","r-ultraleggendario",1000000000,
+"#000","#ffd700","👑",25]
+
+].map(x=>({
+
+id:x[0],
+name:x[1],
+rarity:x[2],
+rarityClass:x[3],
+cost:x[4],
+color:x[5],
+accent:x[6],
+emoji:x[7],
+lives:x[8]
+
+}));const extraSkinNames=[
+
+"Fiamma Stellare",
+"Neon Blu",
+"Neon Rosso",
+"Neon Verde",
+"Neon Viola",
+"Neon Oro",
+"Neon Rosa",
+"Neon Ciano",
+"Neon Arcobaleno",
+"Crystal",
+"Crystal Blu",
+"Crystal Rosso",
+"Crystal Verde",
+"Crystal Viola",
+"Crystal Oro",
+"Crystal Rosa",
+"Crystal Ciano",
+"Diamante Blu",
+"Diamante Rosso",
+"Diamante Verde",
+"Diamante Viola",
+"Diamante Oro",
+"Diamante Rosa",
+"Diamante Ciano",
+"Stella Blu",
+"Stella Rossa",
+"Stella Verde",
+"Stella Viola",
+"Stella Dorata",
+"Stella Rosa",
+"Stella Ciano",
+"Stella Arcobaleno",
+"Cometa Blu",
+"Cometa Rossa",
+"Cometa Verde",
+"Cometa Viola",
+"Cometa Dorata",
+"Cometa Rosa",
+"Cometa Ciano",
+"Cometa Galattica",
+"Fulmine Blu",
+"Fulmine Rosso",
+"Fulmine Verde",
+"Fulmine Viola",
+"Fulmine Oro",
+"Fulmine Rosa",
+"Fulmine Ciano",
+"Fulmine Supremo",
+"Drago Blu",
+"Drago Rosso",
+"Drago Verde",
+"Drago Viola",
+"Drago Oro",
+"Drago Rosa",
+"Drago Ciano",
+"Drago Galattico",
+"Fenice Blu",
+"Fenice Rossa",
+"Fenice Verde",
+"Fenice Viola",
+"Fenice Dorata",
+"Fenice Rosa",
+"Fenice Ciano",
+"Fenice Galattica",
+"Guerriero Blu",
+"Guerriero Rosso",
+"Guerriero Verde",
+"Guerriero Viola",
+"Guerriero Oro",
+"Guerriero Rosa",
+"Guerriero Ciano",
+"Guerriero Cosmico",
+"Re Blu",
+"Re Rosso",
+"Re Verde",
+"Re Viola",
+"Re Dorato",
+"Re Rosa",
+"Re Ciano",
+"Re Cosmico",
+"Imperatore Blu",
+"Imperatore Rosso",
+"Imperatore Verde",
+"Imperatore Viola",
+"Imperatore Dorato",
+"Imperatore Rosa",
+"Imperatore Ciano",
+"Imperatore Cosmico",
+"Divino Blu",
+"Divino Rosso",
+"Divino Verde",
+"Divino Viola",
+"Divino Oro",
+"Divino Rosa",
+"Divino Ciano",
+"Divino Arcobaleno",
+"Angelo Blu",
+"Angelo Rosso",
+"Angelo Verde",
+"Angelo Viola",
+"Angelo Dorato",
+"Angelo Rosa",
+"Angelo Ciano",
+"Angelo Celeste",
+"Demone Blu",
+"Demone Rosso",
+"Demone Verde",
+"Demone Viola",
+"Demone Oro",
+"Demone Rosa",
+"Demone Ciano",
+"Demone Cosmico",
+"Universo Blu",
+"Universo Rosso",
+"Universo Verde",
+"Universo Viola",
+"Universo Dorato",
+"Universo Rosa",
+"Universo Ciano",
+"Universo Infinito",
+"Realtà Assoluta",
+"Entità Suprema",
+"Nucleo Cosmico",
+"Essenza Infinita",
+"Forma Finale"
+
+];
+
+const extraColors=[
+["#2563eb","#93c5fd"],
+["#dc2626","#fca5a5"],
+["#16a34a","#86efac"],
+["#7c3aed","#c4b5fd"],
+["#eab308","#fef08a"],
+["#db2777","#f9a8d4"],
+["#06b6d4","#a5f3fc"],
+["#f97316","#fed7aa"],
+["#4f46e5","#818cf8"],
+["#0891b2","#67e8f9"],
+["#be123c","#fb7185"],
+["#15803d","#bbf7d0"]
+];
+
+const extraEmojis=[
+"🔥","💙","❤️","💚","💜","💛",
+"🩷","🩵","🌈","💎","⭐","☄️",
+"⚡","🐉","🛡️","👑","😈","👼",
+"🌌","♾️","💠","🌠","✨","🔱"
+];
+
+extraSkinNames.forEach((name,i)=>{
+
+const n=i+1;
+
+let cost;
+
+if(n<=20){
+cost=175000000+n*25000000;
+}
+else if(n<=40){
+cost=700000000+(n-20)*75000000;
+}
+else if(n<=60){
+cost=2200000000+(n-40)*150000000;
+}
+else if(n<=80){
+cost=6000000000+(n-60)*400000000;
+}
+else if(n<=100){
+cost=15000000000+(n-80)*1000000000;
+}
+else{
+cost=40000000000+(n-100)*5000000000;
+}
+
+let lives;
+
+if(cost<1000000000){
+lives=25+Math.floor(n/4);
+}
+else if(cost<10000000000){
+lives=35+Math.floor(n/3);
+}
+else if(cost<100000000000){
+lives=50+Math.floor(n/2);
+}
+else{
+lives=75+n;
+}
+
+skins.push({
+
+id:"extra_skin_"+n,
+name,
+rarity:"Ultraleggendario",
+rarityClass:"r-ultraleggendario",
+cost:Math.floor(cost),
+color:extraColors[i%extraColors.length][0],
+accent:extraColors[i%extraColors.length][1],
+emoji:extraEmojis[i%extraEmojis.length],
+lives
+
+});
+
+});
+
+const stripes=[
+
+{
+id:"none",
+name:"Nessuna",
+cost:0,
+mult:1.0,
+colors:["transparent"],
+emoji:"➖",
+style:"none",
+width:0,
+glow:0
+},
+
+{
+id:"blue",
+name:"Blu Turbo",
+cost:50000,
+mult:1.3,
+colors:["#2563eb","#93c5fd"],
+emoji:"🔵",
+style:"pulse",
+width:13,
+glow:18
+},
+
+{
+id:"cyan",
+name:"Azzurra Plasma",
+cost:100000,
+mult:1.4,
+colors:["#06b6d4","#67e8f9","#fff"],
+emoji:"🩵",
+style:"pulse",
+width:14,
+glow:20
+},
+
+{
+id:"pink",
+name:"Rosa Neon",
+cost:150000,
+mult:1.5,
+colors:["#db2777","#f472b6","#fce7f3"],
+emoji:"🩷",
+style:"pulse",
+width:15,
+glow:22
+},
+
+{
+id:"purple",
+name:"Viola Laser",
+cost:250000,
+mult:1.7,
+colors:["#7c3aed","#c084fc","#f5d0fe"],
+emoji:"🟣",
+style:"laser",
+width:14,
+glow:25
+},
+
+{
+id:"green",
+name:"Verde Tossico",
+cost:350000,
+mult:1.9,
+colors:["#16a34a","#84cc16","#d9f99d"],
+emoji:"🟢",
+style:"bubbles",
+width:16,
+glow:22
+},
+
+{
+id:"orange",
+name:"Arancio Fiamma",
+cost:500000,
+mult:2.1,
+colors:["#ea580c","#f97316","#facc15"],
+emoji:"🟠",
+style:"flame",
+width:17,
+glow:26
+},
+
+{
+id:"red",
+name:"Rossa Inferno",
+cost:650000,
+mult:2.3,
+colors:["#b91c1c","#ef4444","#fca5a5"],
+emoji:"🔴",
+style:"flame",
+width:18,
+glow:28
+},
+
+{
+id:"rainbow",
+name:"Arcobaleno",
+cost:750000,
+mult:2.5,
+colors:[
+"#ef4444",
+"#f59e0b",
+"#22c55e",
+"#06b6d4",
+"#3b82f6",
+"#a855f7",
+"#ec4899"
+],
+emoji:"🌈",
+style:"rainbow",
+width:17,
+glow:28
+},
+
+{
+id:"electric",
+name:"Elettrica",
+cost:900000,
+mult:2.7,
+colors:["#38bdf8","#facc15","#fff","#60a5fa"],
+emoji:"⚡",
+style:"electric",
+width:18,
+glow:32
+},
+
+{
+id:"cosmic",
+name:"Cosmica",
+cost:1000000,
+mult:3.0,
+colors:["#7c3aed","#22d3ee","#ec4899","#fff"],
+emoji:"🌟",
+style:"cosmic",
+width:19,
+glow:34
+},
+
+{
+id:"galactic",
+name:"Galattica",
+cost:1500000,
+mult:3.2,
+colors:["#312e81","#7c3aed","#06b6d4","#f472b6"],
+emoji:"🌌",
+style:"cosmic",
+width:20,
+glow:38
+},
+
+{
+id:"aurora",
+name:"Aurora",
+cost:2000000,
+mult:3.5,
+colors:["#14b8a6","#22d3ee","#a7f3d0","#c084fc"],
+emoji:"🌈",
+style:"aurora",
+width:20,
+glow:40
+},
+
+{
+id:"starfire",
+name:"Starfire",
+cost:3000000,
+mult:4.0,
+colors:["#f97316","#facc15","#fff","#f43f5e"],
+emoji:"☀️",
+style:"starfire",
+width:22,
+glow:44
+},
+
+{
+id:"void",
+name:"Vuoto Assoluto",
+cost:4000000,
+mult:4.5,
+colors:["#000","#312e81","#a855f7","#22d3ee"],
+emoji:"🕳️",
+style:"void",
+width:23,
+glow:48
+},
+
+{
+id:"infinity",
+name:"Infinita",
+cost:5000000,
+mult:5.0,
+colors:[
+"#fff",
+"#22d3ee",
+"#a855f7",
+"#ec4899",
+"#facc15"
+],
+emoji:"♾️",
+style:"infinity",
+width:24,
+glow:52
+},
+
+{
+id:"dimension_x10",
+name:"DIMENSIONE X10",
+cost:100000000,
+mult:10.0,
+colors:[
+"#fff",
+"#00ffff",
+"#8b5cf6",
+"#ff00ff",
+"#ffd700"
+],
+emoji:"🌀",
+style:"dimension",
+width:30,
+glow:80
+}
+
+];
+
+function getStripe(){
+return stripes.find(
+s=>s.id===selectedStripe
+)||stripes[0];
+}
+
+function fmtCoins(n){
+return Math.floor(
+Number(n)||0
+).toLocaleString("it-IT");
+}
+
+function stripeGradient(s){
+
+if(!s||s.id==="none")
+return "transparent";
+
+return s.colors.length===1
+?s.colors[0]
+:`linear-gradient(90deg,${s.colors.join(",")})`;
+
+}
+
+const cheats={
+god:false,
+high:false,
+fast:false,
+slow:false,
+gravity:false,
+noobs:false
+};
+
+let dimensionMode=false;
+let dimensionTime=0;
+let dimensionCooldown=0;
+let dimensionTargetY=ground-120;
+
+const DIMENSION_DURATION=120;
+const DIMENSION_COOLDOWN=600;
+
+const keys={};
+
+function getSkin(){
+return skins.find(
+s=>s.id===selected
+)||skins[0];
+}
+
+function save(){
+
+localStorage.setItem(
+saveKey,
+JSON.stringify({
+coins,
+best,
+owned,
+selected,
+ownedStripes,
+selectedStripe,
+coinBank
+})
+);
+
+}
+
+function updateUI(){
+
+scoreUI.textContent=
+Math.floor(score);
+
+bestUI.textContent=best;
+
+coinsUI.textContent=
+fmtCoins(coins);
+
+livesUI.textContent=
+runLives;
+
+}
+
+function updateDimensionButton(){
+
+dimensionBtn.style.display=
+(
+selectedStripe==="dimension_x10" &&
+!dimensionMode &&
+dimensionCooldown<=0
+)
+?"block"
+:"none";
+
+}
+
+function enterDimension(){
+
+if(
+selectedStripe!=="dimension_x10"||
+dimensionMode||
+dimensionCooldown>0
+)return;
+
+dimensionMode=true;
+dimensionTime=DIMENSION_DURATION;
+dimensionTargetY=player.y;
+obstacles=[];
+player.vy=0;
+
+updateDimensionButton();
+
+}
+
+function exitDimension(){
+
+dimensionMode=false;
+dimensionTime=0;
+dimensionCooldown=DIMENSION_COOLDOWN;
+
+obstacles=[];
+
+player.y=ground-player.h;
+player.vy=0;
+
+updateDimensionButton();
+save();
+
+  }function reset(){
+
+player={
+x:170,
+y:ground-48,
+w:48,
+h:48,
+vy:0,
+onGround:true,
+rot:0
+};
+
+obstacles=[];
+particles=[];
+
+score=0;
+spawnTimer=.9;
+
+gameOver=false;
+running=true;
+waitingRevive=false;
+worldX=0;
+
+runLives=getSkin().lives;
+
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=null;
+
+revivePanel.style.display="none";
+
+updateDimensionButton();
+updateUI();
+
+}
+
+function jump(){
+
+if(gameOver){
+reset();
+return;
+}
+
+if(!running||waitingRevive)
+return;
+
+if(player.onGround){
+
+player.vy=
+cheats.high
+?-950
+:-720;
+
+player.onGround=false;
+
+}
+
+}
+
+function addObstacle(){
+
+if(Math.random()<.72){
+
+let h=25+Math.random()*55;
+let w=30+Math.random()*22;
+
+obstacles.push({
+x:W+60,
+y:ground-h,
+w,
+h
+});
+
+}else{
+
+obstacles.push(
+{
+x:W+60,
+y:ground-30,
+w:36,
+h:30
+},
+{
+x:W+125,
+y:ground-30,
+w:36,
+h:30
+}
+);
+
+}
+
+}
+
+function hit(o){
+
+const a=player.x+6;
+const b=player.y+6;
+const w=player.w-12;
+const h=player.h-12;
+
+return(
+a<o.x+o.w &&
+a+w>o.x &&
+b+h>o.y
+);
+
+}
+
+function burst(x,y){
+
+for(let i=0;i<35;i++)
+
+particles.push({
+x,
+y,
+vx:(Math.random()-.5)*700,
+vy:(Math.random()-.8)*700,
+life:.75,
+size:4+Math.random()*6
+});
+
+}
+
+function die(){
+
+if(gameOver||waitingRevive)
+return;
+
+burst(
+player.x+24,
+player.y+24
+);
+
+best=Math.max(
+best,
+Math.floor(score)
+);
+
+if(runLives>0){
+
+runLives--;
+
+openRevive(false);
+
+}else{
+
+openRevive(true);
+
+}
+
+save();
+updateUI();
+
+}
+
+function openRevive(buy){
+
+waitingRevive=true;
+running=false;
+
+reviveText.textContent=
+buy
+?"Non hai vite. Paga 5.000 🪙 per continuare."
+:"Hai usato una vita! Continua mantenendo il punteggio.";
+
+reviveYes.textContent=
+buy
+?"❤️ PAGA 5.000 🪙 E CONTINUA"
+:"❤️ CONTINUA";
+
+revivePanel.style.display="flex";
+
+reviveTimer=10;
+
+document.getElementById(
+"reviveTimer"
+).textContent=10;
+
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=setInterval(()=>{
+
+reviveTimer--;
+
+document.getElementById(
+"reviveTimer"
+).textContent=reviveTimer;
+
+if(reviveTimer<=0){
+
+clearInterval(reviveInterval);
+
+reviveInterval=null;
+
+finishGameOver();
+
+}
+
+},1000);
+
+}
+
+function continueGame(){
+
+if(!waitingRevive)
+return;
+
+let pay=
+reviveYes.textContent.includes(
+"5.000"
+);
+
+if(pay){
+
+if(Math.floor(coins)<5000){
+
+alert(
+"Non hai abbastanza monete! Servono 5.000 🪙."
+);
+
+return;
+
+}
+
+coins=
+Math.floor(coins)-5000;
+
+runLives=1;
+
+}
+
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=null;
+
+waitingRevive=false;
+running=true;
+
+player.y=ground-player.h;
+player.vy=0;
+player.onGround=true;
+player.rot=0;
+
+obstacles=[];
+particles=[];
+
+revivePanel.style.display="none";
+
+save();
+updateUI();
+
+}
+
+function finishGameOver(){
+
+if(reviveInterval)
+clearInterval(reviveInterval);
+
+reviveInterval=null;
+
+waitingRevive=false;
+running=false;
+gameOver=true;
+
+revivePanel.style.display="none";
+
+best=Math.max(
+best,
+Math.floor(score)
+);
+
+save();
+updateUI();
+
+}
+
+function update(dt){
+
+if(dimensionCooldown>0){
+
+dimensionCooldown=
+Math.max(
+0,
+dimensionCooldown-dt
+);
+
+updateDimensionButton();
+
+}
+
+if(dimensionMode){
+
+dimensionTime-=dt;
+
+if(dimensionTime<=0){
+
+exitDimension();
+return;
+
+}
+
+if(
+keys.ArrowUp||
+keys.KeyW||
+keys.Space
+)
+dimensionTargetY-=420*dt;
+
+if(
+keys.ArrowDown||
+keys.KeyS
+)
+dimensionTargetY+=420*dt;
+
+player.y+=
+(
+dimensionTargetY-player.y
+)*
+Math.min(1,dt*8);
+
+player.y=
+Math.max(
+45,
+Math.min(
+ground-65,
+player.y
+)
+);
+
+score+=dt*10;
+
+let baseCoins=
+Math.max(
+0,
+Math.floor(score)-
+Math.floor(score-dt*10)
+);
+
+coinBank+=baseCoins*10;
+
+let whole=
+Math.floor(coinBank);
+
+if(whole>0){
+
+coins+=whole;
+coinBank-=whole;
+
+}
+
+updateUI();
+
+return;
+
+}
+
+if(!running){
+
+particles.forEach(p=>{
+
+p.x+=p.vx*dt;
+p.y+=p.vy*dt;
+p.vy+=1100*dt;
+p.life-=dt;
+
+});
+
+particles=
+particles.filter(
+p=>p.life>0
+);
+
+return;
+
+}
+
+score+=dt*10;
+
+let baseCoins=
+Math.max(
+0,
+Math.floor(score)-
+Math.floor(score-dt*10)
+);
+
+coinBank+=
+baseCoins*getStripe().mult;
+
+let whole=
+Math.floor(coinBank);
+
+if(whole>0){
+
+coins+=whole;
+coinBank-=whole;
+
+}
+
+let speed=
+390+score*1.6;
+
+if(cheats.fast)
+speed=650;
+
+if(cheats.slow)
+speed*=.55;
+
+spawnTimer-=dt;
+
+if(spawnTimer<=0){
+
+if(!cheats.noobs)
+addObstacle();
+
+spawnTimer=
+.72+
+Math.random()*.7;
+
+}
+
+player.vy+=
+(
+cheats.gravity
+?700
+:2100
+)*dt;
+
+player.y+=
+player.vy*dt;
+
+if(
+player.y+player.h>=ground
+){
+
+player.y=
+ground-player.h;
+
+player.vy=0;
+player.onGround=true;
+
+}else{
+
+player.onGround=false;
+
+}
+
+player.rot=0;
+
+obstacles.forEach(
+o=>o.x-=speed*dt
+);
+
+obstacles=
+obstacles.filter(
+o=>o.x+o.w>-50
+);
+
+if(!cheats.god)
+
+for(const o of obstacles){
+
+if(hit(o)){
+
+die();
+break;
+
+}
+
+}
+
+updateUI();
+
+}
+
+function draw(){
+
+ctx.clearRect(
+0,
+0,
+W,
+H
+);
+
+if(dimensionMode){
+
+let t=
+performance.now()/1000;
+
+let g=
+ctx.createLinearGradient(
+0,0,W,H
+);
+
+g.addColorStop(
+0,
+"#030014"
+);
+
+g.addColorStop(
+.35,
+"#24105c"
+);
+
+g.addColorStop(
+.7,
+"#071f42"
+);
+
+g.addColorStop(
+1,
+"#160021"
+);
+
+ctx.fillStyle=g;
+ctx.fillRect(
+0,0,W,H
+);
+
+for(let i=0;i<140;i++){
+
+let x=
+(i*137+t*25)%W;
+
+let y=
+(
+i*83+
+Math.sin(t*1.5+i)*30+
+H
+)%H;
+
+ctx.fillStyle=[
+"#fff",
+"#06ffff",
+"#ff00ff",
+"#a855f7",
+"#ffd700"
+][i%5];
+
+ctx.globalAlpha=
+.25+
+((i%7)/14);
+
+ctx.beginPath();
+
+ctx.arc(
+x,
+y,
+1+(i%4),
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+}
+
+ctx.globalAlpha=1;
+
+ctx.save();
+
+ctx.translate(
+W/2,
+ground-150
+);
+
+ctx.rotate(t*.5);
+
+for(let i=0;i<6;i++){
+
+ctx.beginPath();
+
+ctx.strokeStyle=[
+"#06ffff",
+"#8b5cf6",
+"#ec4899",
+"#ffd700",
+"#fff",
+"#00ff99"
+][i];
+
+ctx.lineWidth=8-i;
+
+ctx.shadowBlur=35;
+
+ctx.shadowColor=
+ctx.strokeStyle;
+
+ctx.arc(
+0,
+0,
+95+i*18+
+Math.sin(t*3+i)*8,
+0,
+Math.PI*2
+);
+
+ctx.stroke();
+
+}
+
+ctx.restore();
+
+ctx.textAlign="center";
+
+ctx.font=
+"bold 36px Arial";
+
+ctx.fillStyle="#fff";
+
+ctx.shadowBlur=22;
+
+ctx.shadowColor="#06ffff";
+
+ctx.fillText(
+"DIMENSIONE X10",
+W/2,
+70
+);
+
+ctx.font=
+"bold 18px Arial";
+
+ctx.fillStyle="#ffd700";
+
+ctx.fillText(
+"VOLO LIBERO • "+
+Math.ceil(dimensionTime)+
+"s",
+W/2,
+100
+);
+
+ctx.shadowBlur=0;
+ctx.textAlign="left";
+
+}else{
+
+let g=
+ctx.createLinearGradient(
+0,0,0,H
+);
+
+g.addColorStop(
+0,
+"#27276a"
+);
+
+g.addColorStop(
+1,
+"#09091b"
+);
+
+ctx.fillStyle=g;
+
+ctx.fillRect(
+0,0,W,H
+);
+
+for(let i=0;i<16;i++){
+
+let x=
+i*100-
+(worldX*.18)%100;
+
+let h=
+50+(i%5)*25;
+
+ctx.fillStyle="#6464be24";
+
+ctx.fillRect(
+x,
+ground-h,
+75,
+h
+);
+
+}
+
+ctx.strokeStyle="#ffffff10";
+
+for(
+let x=-(worldX%60);
+x<W;
+x+=60
+){
+
+ctx.beginPath();
+
+ctx.moveTo(x,0);
+ctx.lineTo(x,H);
+
+ctx.stroke();
+
+}
+
+for(
+let y=55;
+y<ground;
+y+=55
+){
+
+ctx.beginPath();
+
+ctx.moveTo(0,y);
+ctx.lineTo(W,y);
+
+ctx.stroke();
+
+}
+
+ctx.fillStyle="#20d8b0";
+
+ctx.fillRect(
+0,
+ground,
+W,
+H-ground
+);
+
+ctx.fillStyle="#d8fff8";
+
+ctx.fillRect(
+0,
+ground,
+W,
+5
+);
+
+obstacles.forEach(o=>{
+
+ctx.fillStyle="#ff4168";
+
+ctx.beginPath();
+
+ctx.moveTo(
+o.x,
+ground
+);
+
+ctx.lineTo(
+o.x+o.w/2,
+o.y
+);
+
+ctx.lineTo(
+o.x+o.w,
+ground
+);
+
+ctx.closePath();
+
+ctx.fill();
+
+ctx.strokeStyle="#fff";
+ctx.lineWidth=3;
+
+ctx.stroke();
+
+});
+
+let st=getStripe();
+
+if(st.id!=="none"){
+
+ctx.save();
+
+ctx.lineCap="round";
+
+ctx.shadowBlur=
+st.glow;
+
+ctx.shadowColor=
+st.colors[0];
+
+for(let i=0;i<16;i++){
+
+let tx=
+player.x-15-i*15;
+
+let ty=
+player.y+
+24+
+Math.sin(
+worldX*.16+i*.8
+)*5;
+
+let grad=
+ctx.createLinearGradient(
+tx,
+ty,
+tx+70,
+ty
+);
+
+st.colors.forEach(
+(col,k)=>
+grad.addColorStop(
+k/(st.colors.length-1),
+col
+)
+);
+
+ctx.strokeStyle=grad;
+
+ctx.globalAlpha=
+Math.max(
+.08,
+.95-i*.055
+);
+
+ctx.lineWidth=
+Math.max(
+3,
+st.width-i*.45
+);
+
+ctx.beginPath();
+
+ctx.moveTo(
+tx,
+ty
+);
+
+ctx.quadraticCurveTo(
+tx+30,
+ty+
+Math.sin(
+worldX*.2+i
+)*8,
+tx+70,
+ty
+);
+
+ctx.stroke();
+
+}
+
+ctx.restore();
+
+}
+
+}
+
+let s=getSkin();
+
+ctx.save();
+
+ctx.translate(
+player.x+24,
+player.y+24
+);
+
+ctx.fillStyle=s.color;
+
+ctx.shadowBlur=
+dimensionMode
+?35
+:16;
+
+ctx.shadowColor=
+dimensionMode
+?"#00ffff"
+:s.color;
+
+ctx.fillRect(
+-24,
+-24,
+48,
+48
+);
+
+ctx.shadowBlur=0;
+
+ctx.strokeStyle="#111";
+ctx.lineWidth=5;
+
+ctx.strokeRect(
+-24,
+-24,
+48,
+48
+);
+
+ctx.fillStyle=s.accent;
+
+ctx.fillRect(
+-14,
+-11,
+8,
+8
+);
+
+ctx.fillRect(
+6,
+-11,
+8,
+8
+);
+
+ctx.fillRect(
+-12,
+7,
+24,
+5
+);
+
+ctx.restore();
+
+particles.forEach(p=>{
+
+ctx.globalAlpha=
+Math.max(
+0,
+p.life*1.7
+);
+
+ctx.fillStyle=s.color;
+
+ctx.fillRect(
+p.x,
+p.y,
+p.size,
+p.size
+);
+
+ctx.globalAlpha=1;
+
+});
+
+if(gameOver){
+
+ctx.fillStyle="#000b";
+
+ctx.fillRect(
+0,
+0,
+W,
+H
+);
+
+ctx.textAlign="center";
+
+ctx.fillStyle="#fff";
+
+ctx.font=
+"bold 60px Arial";
+
+ctx.fillText(
+"GAME OVER",
+W/2,
+240
+);
+
+ctx.font=
+"22px Arial";
+
+ctx.fillText(
+"Tocca lo schermo o premi Spazio per riprovare",
+W/2,
+295
+);
+
+ctx.fillStyle="#ffd700";
+
+ctx.font=
+"18px Arial";
+
+ctx.fillText(
+"Punteggio: "+
+Math.floor(score)+
+" | 🏅 Record: "+
+best,
+W/2,
+335
+);
+
+ctx.textAlign="left";
+
+}
+
+if(running)
+worldX++;
+
+  }function loop(t){
+
+let dt=
+Math.min(
+(t-last)/1000,
+.033
+);
+
+last=t;
+
+update(dt);
+draw();
+
+requestAnimationFrame(loop);
+
+}
+
+addEventListener(
+"keydown",
+e=>{
+
+keys[e.code]=true;
+
+if(dimensionMode){
+
+if([
+"Space",
+"ArrowUp",
+"ArrowDown",
+"KeyW",
+"KeyS"
+].includes(e.code))
+e.preventDefault();
+
+}else if([
+"Space",
+"ArrowUp"
+].includes(e.code)){
+
+e.preventDefault();
+jump();
+
+}
+
+if(e.code==="KeyR")
+reset();
+
+});
+
+addEventListener(
+"keyup",
+e=>{
+keys[e.code]=false;
+}
+);
+
+c.addEventListener(
+"pointerdown",
+e=>{
+
+if(dimensionMode){
+
+dimensionTargetY=
+(e.clientY/window.innerHeight)*H;
+
+}else{
+
+jump();
+
+}
+
+});
+
+c.addEventListener(
+"pointermove",
+e=>{
+
+if(
+dimensionMode&&
+e.buttons
+){
+
+dimensionTargetY=
+(e.clientY/window.innerHeight)*H;
+
+}
+
+});
+
+dimensionBtn.onclick=
+enterDimension;
+
+addEventListener(
+"pagehide",
+save
+);
+
+addEventListener(
+"beforeunload",
+save
+);
+
+setInterval(
+save,
+3000
+);
+
+const shop=
+document.getElementById("shop");
+
+const promo=
+document.getElementById("promoPanel");
+
+const admin=
+document.getElementById("adminPanel");
+
+shopBtn.onclick=()=>{
+renderShop();
+shop.style.display="flex";
+};
+
+promoBtn.onclick=()=>{
+promo.style.display="flex";
+};
+
+adminBtn.onclick=()=>{
+admin.style.display="flex";
+};
+
+shopX.onclick=()=>{
+shop.style.display="none";
+};
+
+promoX.onclick=()=>{
+promo.style.display="none";
+};
+
+adminX.onclick=()=>{
+admin.style.display="none";
+};
+
+document
+.querySelectorAll(".closeAll")
+.forEach(
+b=>
+b.onclick=()=>{
+shop.style.display="none";
+promo.style.display="none";
+admin.style.display="none";
+}
+);
+
+function renderShop(){
+
+skinGrid.innerHTML="";
+
+skins.forEach(s=>{
+
+let ownedNow=
+owned.includes(s.id);
+
+let selectedNow=
+selected===s.id;
+
+let d=
+document.createElement("div");
+
+d.className=
+"skin "+
+s.rarityClass;
+
+d.innerHTML=`
+
+<span class="rarity-tag">
+${s.rarity}
+</span>
+
+<div
+class="preview"
+style="
+background:${s.color};
+box-shadow:0 0 12px ${s.color}
+">
+${s.emoji}
+</div>
+
+<b>${s.name}</b>
+
+<div class="small">
+${s.cost
+?fmtCoins(s.cost)+" 🪙"
+:"Gratis"}
+</div>
+
+<div
+style="
+color:#ff6b9d;
+font-weight:bold
+">
+❤️ ${s.lives}
+</div>
+
+`;
+
+let b=
+document.createElement("button");
+
+b.textContent=
+selectedNow
+?"EQUIPAGGIATA"
+:ownedNow
+?"EQUIPAGGIA"
+:"COMPRA";
+
+b.disabled=
+selectedNow;
+
+b.onclick=()=>{
+
+if(ownedNow){
+
+selected=s.id;
+
+save();
+
+renderShop();
+
+return;
+
+}
+
+if(
+Math.floor(coins)>=s.cost
+){
+
+coins=
+Math.floor(coins)-s.cost;
+
+owned.push(s.id);
+
+selected=s.id;
+
+save();
+
+renderShop();
+
+updateUI();
+
+alert(
+"🎉 Hai ottenuto "+
+s.name+
+"!"
+);
+
+}else{
+
+alert(
+"Servono "+
+fmtCoins(s.cost)+
+" 🪙."
+);
+
+}
+
+};
+
+d.appendChild(b);
+
+skinGrid.appendChild(d);
+
+});
+
+stripeGrid.innerHTML="";
+
+stripes.forEach(s=>{
+
+let ownedNow=
+ownedStripes.includes(s.id);
+
+let selectedNow=
+selectedStripe===s.id;
+
+let d=
+document.createElement("div");
+
+d.className=
+"skin"+
+(
+selectedNow
+?" stripe-equipped"
+:""
+);
+
+d.innerHTML=`
+
+<div class="preview">
+${s.emoji}
+</div>
+
+<b>${s.name}</b>
+
+<div
+class="stripe-preview"
+style="
+color:${s.colors[0]};
+background:${stripeGradient(s)}
+">
+</div>
+
+<div
+style="
+color:#ffd700;
+font-weight:bold
+">
+🪙 ×${s.mult.toFixed(1).replace(".",",")}
+</div>
+
+<div class="small">
+${s.cost
+?fmtCoins(s.cost)+" 🪙"
+:"Gratis"}
+</div>
+
+`;
+
+let b=
+document.createElement("button");
+
+b.textContent=
+selectedNow
+?"EQUIPAGGIATA"
+:ownedNow
+?"EQUIPAGGIA"
+:"COMPRA";
+
+b.disabled=
+selectedNow;
+
+b.onclick=()=>{
+
+if(ownedNow){
+
+selectedStripe=s.id;
+
+save();
+
+updateDimensionButton();
+
+renderShop();
+
+return;
+
+}
+
+if(
+Math.floor(coins)>=s.cost
+){
+
+coins=
+Math.floor(coins)-s.cost;
+
+ownedStripes.push(s.id);
+
+selectedStripe=s.id;
+
+save();
+
+renderShop();
+
+updateUI();
+
+alert(
+"✨ Hai ottenuto la striscia "+
+s.name+
+"!"
+);
+
+}else{
+
+alert(
+"Servono "+
+fmtCoins(s.cost)+
+" 🪙."
+);
+
+}
+
+};
+
+d.appendChild(b);
+
+stripeGrid.appendChild(d);
+
+});
+
+}
+
+function getPlayerId(){
+
+let id=
+localStorage.getItem(
+"gdMiniPlayerId"
+);
+
+if(!id){
+
+id=
+crypto.randomUUID
+?crypto.randomUUID()
+:"p_"+
+Date.now()+
+"_"+Math.random()
+.toString(36)
+.slice(2);
+
+localStorage.setItem(
+"gdMiniPlayerId",
+id
+);
+
+}
+
+return id;
+
+}
+
+const playerId=
+getPlayerId();
+
+redeemBtn.onclick=
+async()=>{
+
+let code=
+promoCode.value.trim();
+
+let m=promoMsg;
+
+m.textContent=
+"Controllo...";
 
 try{
-  if(window.supabase){
-    sb=window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
-  }
+
+const {data,error}=
+await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"redeem",
+code,
+playerId
+}
+}
+);
+
+if(error)
+throw error;
+
+if(!data?.ok){
+
+if(
+code.toUpperCase()==="10KWIN" &&
+!localStorage.getItem(
+"promo_10kwin_used"
+)
+){
+
+localStorage.setItem(
+"promo_10kwin_used",
+"1"
+);
+
+data={
+ok:true,
+reward_coins:50000
+};
+
+}else{
+
+throw new Error(
+data?.error||
+"Codice non valido"
+);
+
+}
+
+}
+
+coins+=
+Number(
+data.reward_coins
+)||0;
+
+save();
+updateUI();
+
+m.style.color=
+"#10b981";
+
+m.textContent=
+"🎉 Codice sbloccato! +"+
+Number(
+data.reward_coins
+).toLocaleString(
+"it-IT"
+)+
+" 🪙";
+
+promoCode.value="";
+
 }catch(e){
-  console.error("Supabase non disponibile:",e);
-}  
-  
-const c=document.getElementById("game");  
-const ctx=c.getContext("2d");  
-  
-const W=1200;  
-const H=650;  
-const ground=535;  
-const saveKey="gdMiniSaveV4";  
-  
-let player;  
-let obstacles=[];  
-let particles=[];  
-let score=0;  
-let coins=0;  
-let best=0;  
-let spawnTimer=.9;  
-let last=0;  
-let gameOver=false;  
-let running=true;  
-let worldX=0;  
-let runLives=0;  
-let waitingRevive=false;  
-let reviveTimer=10;  
-let reviveInterval=null;  
-  
-const saved=JSON.parse(  
-localStorage.getItem(saveKey)||"{}"  
-);  
-  
-coins=Number(saved.coins)||0;  
-best=Number(saved.best)||0;  
-  
-let owned=Array.isArray(saved.owned)  
-?saved.owned  
-:["classic"];  
-  
-let selected=saved.selected||"classic";  
-  
-const skins=[  
-["classic","Classico","Comune","r-comune",0,"#ffdf27","#111","🟨",0],  
-["ruby","Rubino","Rara","r-rara",500,"#ff3d63","#fff","🟥",0],  
-["cyan","Ciano","Rara","r-rara",800,"#25d9ff","#09202a","🟦",0],  
-["emerald","Smeraldo","Epica","r-epica",2000,"#10b981","#022c22","🟩",0],  
-["purple","Viola Reale","Epica","r-epica",3500,"#a855f7","#fff","🟪",0],  
-["gold","Oro Puro","Leggendario","r-leggendario",6000,"#eab308","#351b00","🟧",0],  
-["cyber","Cyber Neon","Leggendario","r-leggendario",10000,"#f43f5e","#00f0ff","🤖",0],  
-["ice","Gelo Artico","Leggendario","r-leggendario",12000,"#67e8f9","#083344","❄️",0],  
-["shadow","Ombra Oscura","Mitica","r-mitica",15000,"#312e81","#c4b5fd","🌑",0],  
-["toxic","Tossico","Mitica","r-mitica",18000,"#84cc16","#17200a","☢️",0],  
-["mythic_fire","Fiamma Mitica","Mitica","r-mitica",25000,"#ff4500","#ffff00","🔥",0],  
-["ocean","Oceano Abissale","Mitica","r-mitica",28000,"#0284c7","#67e8f9","🌊",0],  
-["thunder","Tuono Supremo","Prismatica","r-prismatica",35000,"#facc15","#38bdf8","⚡",0],  
-["prism","Prisma Galattico","Prismatica","r-prismatica",50000,"#06b6d4","#ff007f","💎",0],  
-["rainbow","Arcobaleno Cosmico","Prismatica","r-prismatica",55000,"#ec4899","#22d3ee","🌈",0],  
-["void","Vuoto Stellare","Ultraleggendario","r-ultraleggendario",65000,"#111827","#a855f7","🌀",0],  
-["dragon","Drago Celestiale","Ultraleggendario","r-ultraleggendario",70000,"#dc2626","#facc15","🐉",0],  
-["ultra_god","Dio Supremo","Ultraleggendario","r-ultraleggendario",80000,"#ff8c00","#fff","👑",1],  
-["sun","Sole Supremo","Ultraleggendario","r-ultraleggendario",90000,"#facc15","#fff7ed","☀️",2],  
-["moon","Luna Eterna","Ultraleggendario","r-ultraleggendario",120000,"#6366f1","#e0e7ff","🌙",3],  
-["phoenix","Fenice Immortale","Ultraleggendario","r-ultraleggendario",150000,"#ef4444","#fbbf24","🔥",4],  
-["neutron","Neutrone","Ultraleggendario","r-ultraleggendario",200000,"#22d3ee","#fff","⚛️",5],  
-["blackhole","Buco Nero","Ultraleggendario","r-ultraleggendario",250000,"#020617","#a855f7","🕳️",6],  
-["diamond","Diamante Eterno","Ultraleggendario","r-ultraleggendario",350000,"#e0f2fe","#0ea5e9","💎",7],  
-["cosmic","Entità Cosmica","Ultraleggendario","r-ultraleggendario",500000,"#7c3aed","#22d3ee","🌌",8],  
-["infinity","Infinito","Ultraleggendario","r-ultraleggendario",750000,"#fff","#7c3aed","♾️",9],  
-["secret","??? Segreta ???","Ultraleggendario","r-ultraleggendario",1000000,"#000","#fff","❓",10]  
-].map(x=>({  
-id:x[0],  
-name:x[1],  
-rarity:x[2],  
-rarityClass:x[3],  
-cost:x[4],  
-color:x[5],  
-accent:x[6],  
-emoji:x[7],  
-lives:x[8]  
-}));  
-  
-const cheats={  
-god:false,  
-high:false,  
-fast:false,  
-slow:false,  
-gravity:false,  
-noobs:false  
-};  
-  
-function getSkin(){  
-return skins.find(s=>s.id===selected)||skins[0];  
-}  
-  
-function save(){  
-localStorage.setItem(saveKey,JSON.stringify({  
-coins,  
-best,  
-owned,  
-selected  
-}));  
-}  
-  
-function updateUI(){  
-scoreUI.textContent=Math.floor(score);  
-bestUI.textContent=best;  
-coinsUI.textContent=coins;  
-livesUI.textContent=runLives;  
-}  
-  
-function reset(){  
-player={  
-x:170,  
-y:ground-48,  
-w:48,  
-h:48,  
-vy:0,  
-onGround:true,  
-rot:0  
-};  
-  
-obstacles=[];  
-particles=[];  
-score=0;  
-spawnTimer=.9;  
-gameOver=false;  
-running=true;  
-waitingRevive=false;  
-worldX=0;  
-runLives=getSkin().lives;  
-  
-if(reviveInterval)  
-clearInterval(reviveInterval);  
-  
-reviveInterval=null;  
-revivePanel.style.display="none";  
-  
-updateUI();  
-}  
-  
-function jump(){  
-if(gameOver){  
-reset();  
-return;  
-}  
-  
-if(!running||waitingRevive)  
-return;  
-  
-if(player.onGround){  
-player.vy=cheats.high?-950:-720;  
-player.onGround=false;  
-}  
-}  
-  
-function addObstacle(){  
-if(Math.random()<.72){  
-let h=25+Math.random()*55;  
-let w=30+Math.random()*22;  
-  
-obstacles.push({  
-x:W+60,  
-y:ground-h,  
-w,  
-h  
-});  
-}else{  
-obstacles.push(  
-{x:W+60,y:ground-30,w:36,h:30},  
-{x:W+125,y:ground-30,w:36,h:30}  
-);  
-}  
-}  
-  
-function hit(o){  
-const a=player.x+6;  
-const b=player.y+6;  
-const w=player.w-12;  
-const h=player.h-12;  
-  
-return(  
-a<o.x+o.w&&  
-a+w>o.x&&  
-b+h>o.y  
-);  
-}  
-  
-function burst(x,y){  
-for(let i=0;i<35;i++){  
-particles.push({  
-x,  
-y,  
-vx:(Math.random()-.5)*700,  
-vy:(Math.random()-.8)*700,  
-life:.75,  
-size:4+Math.random()*6  
-});  
-}  
-}  
-  
-function die(){  
-if(gameOver||waitingRevive)  
-return;  
-  
-burst(player.x+24,player.y+24);  
-  
-best=Math.max(best,Math.floor(score));  
-  
-if(runLives>0){  
-runLives--;  
-openRevive(false);  
-}else{  
-openRevive(true);  
-}  
-  
-save();  
-updateUI();  
-}  
-  
-function openRevive(buy){  
-waitingRevive=true;  
-running=false;  
-  
-reviveText.textContent=buy  
-?"Non hai vite. Paga 5.000 🪙 per continuare."  
-:"Hai usato una vita! Continua mantenendo il punteggio.";  
-  
-reviveYes.textContent=buy  
-?"❤️ PAGA 5.000 🪙 E CONTINUA"  
-:"❤️ CONTINUA";  
-  
-revivePanel.style.display="flex";  
-reviveTimer=10;  
-document.getElementById("reviveTimer").textContent=10;  
-  
-if(reviveInterval)  
-clearInterval(reviveInterval);  
-  
-reviveInterval=setInterval(()=>{  
-reviveTimer--;  
-document.getElementById("reviveTimer").textContent=reviveTimer;  
-  
-if(reviveTimer<=0){  
-clearInterval(reviveInterval);  
-reviveInterval=null;  
-finishGameOver();  
-}  
-},1000);  
-}  
-  
-function continueGame(){  
-if(!waitingRevive)  
-return;  
-  
-let pay=reviveYes.textContent.includes("5.000");  
-  
-if(pay){  
-if(coins<5000){  
-alert("Non hai abbastanza monete! Servono 5.000 🪙.");  
-return;  
-}  
-  
-coins-=5000;  
-runLives=1;  
-}  
-  
-if(reviveInterval)  
-clearInterval(reviveInterval);  
-  
-reviveInterval=null;  
-waitingRevive=false;  
-running=true;  
-  
-player.y=ground-player.h;  
-player.vy=0;  
-player.onGround=true;  
-player.rot=0;  
-  
-obstacles=[];  
-particles=[];  
-  
-revivePanel.style.display="none";  
-  
-save();  
-updateUI();  
-}  
-  
-function finishGameOver(){  
-if(reviveInterval)  
-clearInterval(reviveInterval);  
-  
-reviveInterval=null;  
-waitingRevive=false;  
-running=false;  
-gameOver=true;  
-  
-revivePanel.style.display="none";  
-  
-best=Math.max(best,Math.floor(score));  
-  
-save();  
-updateUI();  
-}  
-  
-function update(dt){  
-if(!running){  
-particles.forEach(p=>{  
-p.x+=p.vx*dt;  
-p.y+=p.vy*dt;  
-p.vy+=1100*dt;  
-p.life-=dt;  
-});  
-  
-particles=particles.filter(p=>p.life>0);  
-return;  
-}  
-  
-score+=dt*10;  
-  
-coins+=Math.floor(score)-Math.floor(score-dt*10);  
-  
-let speed=390+score*1.6;  
-  
-if(cheats.fast)  
-speed=650;  
-  
-if(cheats.slow)  
-speed*=.55;  
-  
-spawnTimer-=dt;  
-  
-if(spawnTimer<=0){  
-if(!cheats.noobs)  
-addObstacle();  
-  
-spawnTimer=.72+Math.random()*.7;  
-}  
-  
-player.vy+=(cheats.gravity?700:2100)*dt;  
-player.y+=player.vy*dt;  
-  
-if(player.y+player.h>=ground){  
-player.y=ground-player.h;  
-player.vy=0;  
-player.onGround=true;  
-}else{  
-player.onGround=false;  
-}  
-  
-player.rot=0;  
-  
-obstacles.forEach(o=>{  
-o.x-=speed*dt;  
-});  
-  
-obstacles=obstacles.filter(o=>o.x+o.w>-50);  
-  
-if(!cheats.god){  
-for(const o of obstacles){  
-if(hit(o)){  
-die();  
-break;  
-}  
-}  
-}  
-  
-updateUI();  
-}  
-  
-function draw(){  
-ctx.clearRect(0,0,W,H);  
-  
-let g=ctx.createLinearGradient(0,0,0,H);  
-g.addColorStop(0,"#27276a");  
-g.addColorStop(1,"#09091b");  
-  
-ctx.fillStyle=g;  
-ctx.fillRect(0,0,W,H);  
-  
-for(let i=0;i<16;i++){  
-let x=i*100-(worldX*.18)%100;  
-let h=50+(i%5)*25;  
-  
-ctx.fillStyle="#6464be24";  
-ctx.fillRect(x,ground-h,75,h);  
-}  
-  
-ctx.strokeStyle="#ffffff10";  
-  
-for(let x=-(worldX%60);x<W;x+=60){  
-ctx.beginPath();  
-ctx.moveTo(x,0);  
-ctx.lineTo(x,H);  
-ctx.stroke();  
-}  
-  
-for(let y=55;y<ground;y+=55){  
-ctx.beginPath();  
-ctx.moveTo(0,y);  
-ctx.lineTo(W,y);  
-ctx.stroke();  
-}  
-  
-ctx.fillStyle="#20d8b0";  
-ctx.fillRect(0,ground,W,H-ground);  
-  
-ctx.fillStyle="#d8fff8";  
-ctx.fillRect(0,ground,W,5);  
-  
-obstacles.forEach(o=>{  
-ctx.fillStyle="#ff4168";  
-  
-ctx.beginPath();  
-ctx.moveTo(o.x,ground);  
-ctx.lineTo(o.x+o.w/2,o.y);  
-ctx.lineTo(o.x+o.w,ground);  
-ctx.closePath();  
-  
-ctx.fill();  
-  
-ctx.strokeStyle="#fff";  
-ctx.lineWidth=3;  
-ctx.stroke();  
-});  
-  
-let s=getSkin();  
-  
-ctx.save();  
-  
-ctx.translate(player.x+24,player.y+24);  
-  
-ctx.fillStyle=s.color;  
-ctx.shadowBlur=16;  
-ctx.shadowColor=s.color;  
-  
-ctx.fillRect(-24,-24,48,48);  
-  
-ctx.shadowBlur=0;  
-ctx.strokeStyle="#111";  
-ctx.lineWidth=5;  
-  
-ctx.strokeRect(-24,-24,48,48);  
-  
-ctx.fillStyle=s.accent;  
-  
-ctx.fillRect(-14,-11,8,8);  
-ctx.fillRect(6,-11,8,8);  
-ctx.fillRect(-12,7,24,5);  
-  
-ctx.restore();  
-  
-particles.forEach(p=>{  
-ctx.globalAlpha=Math.max(0,p.life*1.7);  
-ctx.fillStyle=s.color;  
-ctx.fillRect(p.x,p.y,p.size,p.size);  
-ctx.globalAlpha=1;  
-});  
-  
-if(gameOver){  
-ctx.fillStyle="#000b";  
-ctx.fillRect(0,0,W,H);  
-  
-ctx.textAlign="center";  
-ctx.fillStyle="#fff";  
-ctx.font="bold 60px Arial";  
-  
-ctx.fillText("GAME OVER",W/2,240);  
-  
-ctx.font="22px Arial";  
-  
-ctx.fillText(  
-"Tocca lo schermo o premi Spazio per riprovare",  
-W/2,  
-295  
-);  
-  
-ctx.fillStyle="#ffd700";  
-ctx.font="18px Arial";  
-  
-ctx.fillText(  
-"Punteggio: "+Math.floor(score)+" | 🏅 Record: "+best,  
-W/2,  
-335  
-);  
-  
-ctx.textAlign="left";  
-}  
-  
-if(running)  
-worldX+=1;  
-}  
-  
-function loop(t){  
-let dt=Math.min((t-last)/1000,.033);  
-last=t;  
-  
-update(dt);  
-draw();  
-  
-requestAnimationFrame(loop);  
-}  
-  
-addEventListener("keydown",e=>{  
-if(["Space","ArrowUp"].includes(e.code)){  
-e.preventDefault();  
-jump();  
-}  
-  
-if(e.code==="KeyR")  
-reset();  
-});  
-  
-c.addEventListener("pointerdown",jump);  
-  
-addEventListener("pagehide",save);  
-addEventListener("beforeunload",save);  
-  
-setInterval(save,3000);  
-  
-const shop=document.getElementById("shop");  
-const promo=document.getElementById("promoPanel");  
-const admin=document.getElementById("adminPanel");  
-  
-shopBtn.onclick=()=>{  
-renderShop();  
-shop.style.display="flex";  
-};  
-  
-promoBtn.onclick=()=>{  
-promo.style.display="flex";  
-};  
-  
-adminBtn.onclick=()=>{  
-admin.style.display="flex";  
-};  
-  
-shopX.onclick=()=>{  
-shop.style.display="none";  
-};  
-  
-promoX.onclick=()=>{  
-promo.style.display="none";  
-};  
-  
-adminX.onclick=()=>{  
-admin.style.display="none";  
-};  
-  
-document.querySelectorAll(".closeAll").forEach(b=>  
-b.onclick=()=>{  
-shop.style.display="none";  
-promo.style.display="none";  
-admin.style.display="none";  
-});  
-  
-function renderShop(){  
-skinGrid.innerHTML="";  
-  
-skins.forEach(s=>{  
-let ownedNow=owned.includes(s.id);  
-let selectedNow=selected===s.id;  
-  
-let d=document.createElement("div");  
-  
-d.className="skin "+s.rarityClass;  
-  
-d.innerHTML=  
-`<span class="rarity-tag">${s.rarity}</span>  
-<div class="preview" style="background:${s.color};box-shadow:0 0 12px ${s.color}">  
-${s.emoji}  
-</div>  
-<b>${s.name}</b>  
-<div class="small">  
-${s.cost?s.cost.toLocaleString("it-IT")+" 🪙":"Gratis"}  
-</div>  
-<div style="color:#ff6b9d;font-weight:bold">  
-❤️ ${s.lives}  
-</div>`;  
-  
-let b=document.createElement("button");  
-  
-b.textContent=selectedNow  
-?"EQUIPAGGIATA"  
-:ownedNow  
-?"EQUIPAGGIA"  
-:"COMPRA";  
-  
-b.disabled=selectedNow;  
-  
-b.onclick=()=>{  
-if(ownedNow){  
-selected=s.id;  
-save();  
-renderShop();  
-return;  
-}  
-  
-if(coins>=s.cost){  
-coins-=s.cost;  
-owned.push(s.id);  
-selected=s.id;  
-  
-save();  
-renderShop();  
-updateUI();  
-  
-alert("🎉 Hai ottenuto "+s.name+"!");  
-}else{  
-alert("Servono "+s.cost.toLocaleString("it-IT")+" 🪙.");  
-}  
-};  
-  
-d.appendChild(b);  
-skinGrid.appendChild(d);  
-});  
-}  
-  
-function getPlayerId(){  
-let id=localStorage.getItem("gdMiniPlayerId");  
-  
-if(!id){  
-id=crypto.randomUUID  
-?crypto.randomUUID()  
-:"p_"+Date.now()+"_"+Math.random().toString(36).slice(2);  
-  
-localStorage.setItem("gdMiniPlayerId",id);  
-}  
-  
-return id;  
-}  
-  
-const playerId=getPlayerId();  
-  
-redeemBtn.onclick=async()=>{  
-let code=promoCode.value.trim();  
-let m=promoMsg;  
-  
-m.textContent="Controllo...";  
-  
-try{  
-const {data,error}=await sb.functions.invoke(  
-PROMO_FUNCTION,  
-{  
-body:{  
-action:"redeem",  
-code,  
-playerId  
-}  
-}  
-);  
-  
-if(error)  
-throw error;  
-  
-if(!data?.ok)  
-throw new Error(data?.error||"Codice non valido");  
-  
-coins+=Number(data.reward_coins)||0;  
-  
-save();  
-updateUI();  
-  
-m.style.color="#10b981";  
-  
-m.textContent=  
-"🎉 Codice sbloccato! +"+  
-Number(data.reward_coins).toLocaleString("it-IT")+  
-" 🪙";  
-  
-promoCode.value="";  
-  
-}catch(e){  
-m.style.color="#ff4500";  
-m.textContent="❌ "+(e.message||"Errore");  
-}  
-};  
-  
-unlock.onclick=async()=>{  
-msg.textContent="Controllo...";  
-  
-try{  
-const {data,error}=await sb.functions.invoke(  
-PROMO_FUNCTION,  
-{  
-body:{  
-action:"admin_check",  
-adminKey:key.value  
-}  
-}  
-);  
-  
-if(error||!data?.ok)  
-throw new Error("Chiave errata");  
-  
-login.style.display="none";  
-adminArea.style.display="block";  
-adminArea.dataset.key=key.value;  
-  
-loadPromos();  
-  
-}catch(e){  
-msg.textContent="❌ Chiave errata";  
-}  
-};  
-  
-createPromo.onclick=async()=>{  
-createMsg.textContent="Creazione...";  
-  
-try{  
-const {data,error}=await sb.functions.invoke(  
-PROMO_FUNCTION,  
-{  
-body:{  
-action:"create",  
-adminKey:adminArea.dataset.key,  
-code:newCode.value,  
-reward:Number(newReward.value)  
-}  
-}  
-);  
-  
-if(error)  
-throw error;  
-  
-if(!data?.ok)  
-throw new Error(data?.error||"Errore");  
-  
-createMsg.style.color="#10b981";  
-createMsg.textContent="✅ Codice creato: "+data.promo.code;  
-  
-newCode.value="";  
-newReward.value="";  
-  
-loadPromos();  
-  
-}catch(e){  
-createMsg.style.color="#ff4500";  
-createMsg.textContent="❌ "+(e.message||"Errore");  
-}  
-};  
-  
-async function loadPromos(){  
-const {data,error}=await sb.functions.invoke(  
-PROMO_FUNCTION,  
-{  
-body:{  
-action:"list",  
-adminKey:adminArea.dataset.key  
-}  
-}  
-);  
-  
-if(error||!data?.ok){  
-promoList.textContent="Errore caricamento codici";  
-return;  
-}  
-  
-promoList.innerHTML="<h3>📋 Codici creati</h3>";  
-  
-(data.promos||[]).forEach(p=>{  
-let d=document.createElement("div");  
-  
-d.className="promo-row";  
-  
-d.innerHTML=  
-`<span>  
-<b>${p.code}</b><br>  
-🪙 ${Number(p.reward_coins).toLocaleString("it-IT")}  
- · ${p.active?"ATTIVO":"DISATTIVATO"}  
-</span>`;  
-  
-if(p.active){  
-let b=document.createElement("button");  
-  
-b.textContent="Disattiva";  
-  
-b.onclick=async()=>{  
-await sb.functions.invoke(  
-PROMO_FUNCTION,  
-{  
-body:{  
-action:"disable",  
-adminKey:adminArea.dataset.key,  
-id:p.id  
-}  
-}  
-);  
-  
-loadPromos();  
-};  
-  
-d.appendChild(b);  
-}  
-  
-promoList.appendChild(d);  
-});  
-}  
-  
-["god","high","fast","slow","gravity","noobs"].forEach(id=>  
-document.getElementById(id).onchange=e=>  
-cheats[id]=e.target.checked  
-);  
-  
-addCoins.onclick=()=>{  
-coins+=10000;  
-save();  
-updateUI();  
-};  
-  
-clearObs.onclick=()=>{  
-obstacles=[];  
-};  
-  
-reviveYes.onclick=continueGame;  
-reviveNo.onclick=finishGameOver;  
-  
-reset();  
-requestAnimationFrame(loop);  
-</script>  </body>  
+
+m.style.color=
+"#ff4500";
+
+m.textContent=
+"❌ "+
+(
+e.message||
+"Errore"
+);
+
+}
+
+};
+
+unlock.onclick=
+async()=>{
+
+msg.textContent=
+"Controllo...";
+
+try{
+
+const {data,error}=
+await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"admin_check",
+adminKey:key.value
+}
+}
+);
+
+if(
+error||
+!data?.ok
+)
+throw new Error(
+"Chiave errata"
+);
+
+login.style.display=
+"none";
+
+adminArea.style.display=
+"block";
+
+adminArea.dataset.key=
+key.value;
+
+loadPromos();
+
+}catch(e){
+
+msg.textContent=
+"❌ Chiave errata";
+
+}
+
+};
+
+createPromo.onclick=
+async()=>{
+
+createMsg.textContent=
+"Creazione...";
+
+try{
+
+const {data,error}=
+await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"create",
+adminKey:
+adminArea.dataset.key,
+code:newCode.value,
+reward:Number(
+newReward.value
+)
+}
+}
+);
+
+if(error)
+throw error;
+
+if(!data?.ok)
+throw new Error(
+data?.error||
+"Errore"
+);
+
+createMsg.style.color=
+"#10b981";
+
+createMsg.textContent=
+"✅ Codice creato: "+
+data.promo.code;
+
+newCode.value="";
+newReward.value="";
+
+loadPromos();
+
+}catch(e){
+
+createMsg.style.color=
+"#ff4500";
+
+createMsg.textContent=
+"❌ "+
+(
+e.message||
+"Errore"
+);
+
+}
+
+};
+
+async function loadPromos(){
+
+const {data,error}=
+await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"list",
+adminKey:
+adminArea.dataset.key
+}
+}
+);
+
+if(
+error||
+!data?.ok
+){
+
+promoList.textContent=
+"Errore caricamento codici";
+
+return;
+
+}
+
+promoList.innerHTML=
+"<h3>📋 Codici creati</h3>";
+
+(data.promos||[])
+.forEach(p=>{
+
+let d=
+document.createElement("div");
+
+d.className=
+"promo-row";
+
+let info=
+document.createElement("span");
+
+info.innerHTML=`
+
+<b>${p.code}</b>
+<br>
+🪙 ${
+Number(
+p.reward_coins
+).toLocaleString(
+"it-IT"
+)
+}
+ · ${
+p.active
+?"ATTIVO"
+:"DISATTIVATO"
+}
+
+`;
+
+d.appendChild(info);
+
+let buttons=
+document.createElement("div");
+
+buttons.className=
+"promo-buttons";
+
+if(p.active){
+
+let disable=
+document.createElement(
+"button"
+);
+
+disable.textContent=
+"Disattiva";
+
+disable.style.background=
+"#9b2850";
+
+disable.onclick=
+async()=>{
+
+if(!confirm(
+"Vuoi disattivare il codice "+
+p.code+
+"?"
+))
+return;
+
+const {data,error}=
+await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"disable",
+adminKey:
+adminArea.dataset.key,
+id:p.id
+}
+}
+);
+
+if(
+error||
+!data?.ok
+){
+
+alert(
+"Errore durante la disattivazione."
+);
+
+return;
+
+}
+
+loadPromos();
+
+};
+
+buttons.appendChild(
+disable
+);
+
+}else{
+
+let enable=
+document.createElement(
+"button"
+);
+
+enable.textContent=
+"🔄 Riattiva";
+
+enable.style.background=
+"#16a34a";
+
+enable.onclick=
+async()=>{
+
+const {data,error}=
+await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"enable",
+adminKey:
+adminArea.dataset.key,
+id:p.id
+}
+}
+);
+
+if(
+error||
+!data?.ok
+){
+
+alert(
+"Errore durante la riattivazione."
+);
+
+return;
+
+}
+
+loadPromos();
+
+};
+
+buttons.appendChild(
+enable
+);
+
+}
+
+let del=
+document.createElement(
+"button"
+);
+
+del.textContent=
+"🗑️ Elimina";
+
+del.style.background=
+"#dc2626";
+
+del.onclick=
+async()=>{
+
+if(!confirm(
+"⚠️ ELIMINARE DEFINITIVAMENTE il codice "+
+p.code+
+"?\n\nQuesta operazione non può essere annullata."
+))
+return;
+
+del.disabled=true;
+
+del.textContent=
+"Eliminazione...";
+
+try{
+
+const {data,error}=
+await sb.functions.invoke(
+PROMO_FUNCTION,
+{
+body:{
+action:"delete",
+adminKey:
+adminArea.dataset.key,
+id:p.id
+}
+}
+);
+
+if(error)
+throw error;
+
+if(!data?.ok)
+throw new Error(
+data?.error||
+"Errore durante l'eliminazione"
+);
+
+loadPromos();
+
+}catch(e){
+
+alert(
+"❌ Errore: "+
+(
+e.message||
+"Impossibile eliminare il codice"
+)
+);
+
+del.disabled=false;
+
+del.textContent=
+"🗑️ Elimina";
+
+}
+
+};
+
+buttons.appendChild(del);
+
+d.appendChild(buttons);
+
+promoList.appendChild(d);
+
+});
+
+}
+
+[
+"god",
+"high",
+"fast",
+"slow",
+"gravity",
+"noobs"
+].forEach(
+id=>
+document.getElementById(id)
+.onchange=
+e=>
+cheats[id]=
+e.target.checked
+);
+
+addCoins.onclick=()=>{
+
+coins+=10000;
+
+save();
+updateUI();
+
+};
+
+clearObs.onclick=()=>{
+obstacles=[];
+};
+
+reviveYes.onclick=
+continueGame;
+
+reviveNo.onclick=
+finishGameOver;
+
+reset();
+
+updateDimensionButton();
+
+requestAnimationFrame(
+loop
+);
+
+</script>
+
+</body>
 </html>
